@@ -1,0 +1,23 @@
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-content: space-around;
+    align-items: center;
+}
+.wrapper div {
+    display: flex;
+}
+.registration-fields {
+   
+    flex-wrap: wrap;
+    align-items: center;
+    width: 40vh;
+    justify-content: space-between;
+}
+.is-admin-field {
+    align-items: center;
+}
+.button-field {
+
+}
