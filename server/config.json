@@ -6,5 +6,5 @@
         "password": "test@1234",
         "database": "email-id-generation-db"
     },
-    "secret": "secret-code"
+    "secret": "this-is-secret-key"
 }

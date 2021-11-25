@@ -7,59 +7,58 @@ import {
     SET_MESSAGE,
   } from "./types";
   
-  import AuthService from "../services/auth.service";
+  // import AuthService from "../services/auth.service";
   
-  export const register = (username, email, password) => (dispatch) => {
-    return AuthService.register(username, email, password).then(
-      (response) => {
-        dispatch({
-          type: REGISTER_SUCCESS,
-        });
+  // export const register = (username, email, password) => (dispatch) => {
+  //   return AuthService.register(username, email, password).then(
+  //     (response) => {
+  //       dispatch({
+  //         type: REGISTER_SUCCESS,
+  //       });
   
-        dispatch({
-          type: SET_MESSAGE,
-          payload: response.data.message,
-        });
+  //       dispatch({
+  //         type: SET_MESSAGE,
+  //         payload: response.data.message,
+  //       });
   
-        return Promise.resolve();
-      },
-      (error) => {
-        const message =
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message ||
-          error.toString();
+  //       return Promise.resolve();
+  //     },
+  //     (error) => {
+  //       const message =
+  //         (error.response &&
+  //           error.response.data &&
+  //           error.response.data.message) ||
+  //         error.message ||
+  //         error.toString();
   
-        dispatch({
-          type: REGISTER_FAIL,
-        });
+  //       dispatch({
+  //         type: REGISTER_FAIL,
+  //       });
   
-        dispatch({
-          type: SET_MESSAGE,
-          payload: message,
-        });
+  //       dispatch({
+  //         type: SET_MESSAGE,
+  //         payload: message,
+  //       });
   
-        return Promise.reject();
-      }
-    );
-  };
+  //       return Promise.reject();
+  //     }
+  //   );
+  // };
   
-  export const login = (username, password) => (dispatch) => {
-    return (data) => {
+  export const loggedIn = (user) => (dispatch) => {
+    console.log(" logged-in action : ", user)
+    return () => {
         dispatch({
           type: LOGIN_SUCCESS,
-          payload: { user: data },
+          payload: { user },
         });
-  
-        return Promise.resolve();
       }
   };
   
-  export const logout = () => (dispatch) => {
-    AuthService.logout();
+  // export const logout = () => (dispatch) => {
+  //   AuthService.logout();
   
-    dispatch({
-      type: LOGOUT,
-    });
-  };
+  //   dispatch({
+  //     type: LOGOUT,
+  //   });
+  // };

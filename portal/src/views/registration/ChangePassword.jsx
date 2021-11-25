@@ -2,13 +2,14 @@
 import React, {useState} from 'react'
 import { useHistory } from "react-router-dom";
 import axios from 'axios';
+import authHeader from '../../common/authHeader';
 
 const ChangePassword = (props) => {
     
     let [inputData, setInputData] = useState('');
     const history = useHistory();
     const updatePassword = () => {
-        axios.post("http://localhost:8080/user/updatePassword", {  ...inputData })
+        axios.post("http://localhost:8080/updatePassword", {  ...inputData }, {headers: authHeader()})
         .then((response) => {
             console.log("change password response data : ", response.data)
             history.push("/login");
@@ -48,7 +49,7 @@ const ChangePassword = (props) => {
       /></div>
       <div>
       <button type="button"
-               class="btn btn-primary"
+               className="btn btn-primary"
                onClick={updatePassword}
       >
         Change Password

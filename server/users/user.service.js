@@ -1,13 +1,16 @@
-const config = require('../config.json');
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcrypt');
 const mysql = require('mysql2/promise');
-const mailer = require('../helper/mailer')
 var randtoken = require('rand-token');
+const config = require('../config.json');
+const mailer = require('../helper/mailer')
+
+const saltRounds = 10;
 
 async function sendMail() {
     await mailer.sendMail();
 }
+
 
 // Retrieve all users 
 async function getUsers() {
@@ -23,24 +26,38 @@ async function create(params) {
         return { status: 400, error:true, message: 'Please provide user' };
     }
     //generate default password
+    const defaultPassword = randtoken.generate(8);
+    console.log("One Time Password : ", defaultPassword)
+
     const dbConn = await mysql.createConnection(config.database);
     dbConn.config.namedPlaceholders = true;
-    const [rows, fields] = await dbConn.execute(`INSERT INTO user_details (first_name,last_name, email, is_admin) VALUES ("${params.first_name}", "${params.last_name}", "${params.email}", ${params.is_admin}) `);
-
-    if (rows && rows.affectedRows) throw error;
-    return { error: false, data: results, message: 'New user has been created successfully.' };
+    const res = await bcrypt.hash(defaultPassword, saltRounds).then( async (hash) => {
+        const [rows, fields] = await dbConn.execute(`INSERT INTO user_details (first_name,last_name, email, password, is_admin) VALUES ("${params.first_name}", "${params.last_name}", "${params.email}", "${hash}", ${!!params.is_admin}) `);
+        console.log("register rows : ", rows)
+        if (rows && rows.affectedRows) {
+            return { error: false, message: 'New user has been created successfully.' };
+        } else { 
+            return {error: true, message: "Something went wrong!"}
+        };
+    });
+    return res;
 }
 
 // Authenticate User
 async function login(username, password) {
-    console.log("login ", username, password)
     const dbConn = await mysql.createConnection(config.database);
-    const [rows, fields] = await dbConn.query(`SELECT * FROM user_details WHERE email = "${username}" AND password = "${password}"`) 
-
+    const [rows, fields] = await dbConn.query(`SELECT * FROM user_details WHERE email = "${username}"`) 
     if (rows.length > 0) {
-        return { error: false, message: "success" }
+        const res = await bcrypt.compare(password, rows[0].password).then(async (response) => {
+            if (response) {
+                return { error: false, message: "success", user: rows }
+            } else {
+                return { message: "Wrong username/password combination!" };
+            }
+        });
+        return res;
     } else {
-        return { error: true, message: 'Incorrect Username and/or Password!' }
+        return { error: true, message: "User doesn't exist" }
     }			
 }
 
@@ -51,7 +68,7 @@ async function resetPassword(email) {
     const [rows, fields] = await dbConn.query(`SELECT * FROM user_details WHERE email = "${email}"`) 
 
     if (rows.length > 0) {
-        console.log("One Time Password : ", randtoken.generate(20))
+        console.log("One Time Password : ", randtoken.generate(8))
         //send mail
         return { error: false, message: "success" }
     } else {
@@ -61,18 +78,32 @@ async function resetPassword(email) {
 
 // Change Password
 async function updatePassword(email, currentPassword, newPassword) {
-    console.log("updatePassword ", email)
     const dbConn = await mysql.createConnection(config.database);
-    const [rows, fields] = await dbConn.query(`SELECT * FROM user_details WHERE email = "${email}" AND password = "${currentPassword}"`) 
+    const res = await bcrypt.hash(currentPassword, saltRounds, async (err, hash) => {
+        if (err) {
+          console.log(err);
+        }
+        const [rows, fields] = await dbConn.query(`SELECT * FROM user_details WHERE email = "${email}"`) 
 
-    if (rows.length > 0) {
-        const [rows, fields] = await dbConn.execute(`UPDATE user_details SET password = "${params.first_name}" WHERE email="${email}"`);
-
-        if (rows && rows.affectedRows) throw error;
-        return { error: false, data: results, message: 'Password has been changed successfully.' };
-    } else {
-        return { error: true, message: 'Incorrect Username and/or Password!' }
-    }			
+        if (rows.length > 0) {
+            const update_res = await bcrypt.compare(hash, rows[0].password).then( async (response) => {
+                if (response) {
+                    const [rows, fields] = await dbConn.execute(`UPDATE user_details SET password = "${params.first_name}" WHERE email="${email}"`);
+                    if (rows && rows.affectedRows > 0) {
+                         return { error: false, data: results, message: 'Password has been changed successfully.' };
+                    } else {
+                        return {error: true, message: "Something went wrong!"};
+                    }
+                } else {
+                    return { message: "Wrong username/password combination!" };
+                }
+            });
+            return update_res;
+        } else {
+            return { error: true, message: "User doesn't exist" }
+        }
+    });
+    return res;
 }
 
 module.exports = {

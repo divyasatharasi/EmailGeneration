@@ -1,6 +1,9 @@
 ﻿const express = require('express');
 const router = express.Router();
+var jwt = require("jsonwebtoken");
 const userService = require('./user.service');
+const config = require("../config.json")
+const authJwt = require("../helper/authJwt")
 
 router.get('/hello', function register(req, res, next) {
     console.log("hello")
@@ -11,7 +14,6 @@ router.get('/hello', function register(req, res, next) {
 router.get('/users', function (req, res, next) {
     userService.getUsers()
     .then((data) => {
-        console.log("data : ", data);
         res.json({message: "user list"});
     })
     .catch((err) => {
@@ -20,10 +22,11 @@ router.get('/users', function (req, res, next) {
     })
 });
 
-router.post('/register', function register(req, res, next) {
-    console.log("register", req.body)
+router.post('/register', [authJwt.verifyToken], function register(req, res, next) {
     userService.create(req.body)
-    .then(() => res.json({ message: 'Registration successful' }))
+    .then((register_res) => {
+        res.json({ message: 'Registration successful' })
+    })
     .catch((err) => {
         console.log('register error :', err)
     });
@@ -35,12 +38,18 @@ router.post('/login', function login(req, res, next) {
 	if (username && password) {
         userService.login(username, password)
         .then((login_res) => {
-            if(login_res.error) {
+            if (login_res && !login_res.error && login_res.message == "success") {
+                const user = login_res.user[0]
+                req.session.user = user;
+                const token = jwt.sign({ email: user.email }, config.secret, {
+                    expiresIn: 86400 // 24 hours
+                });
+                res.status(200).send({
+                    user,
+                    accessToken: token
+                });
+            } else {
                 res.json(login_res.message)
-            }
-            else {
-                console.log("login_res : ", login_res)
-                res.json(login_res)
             }
         })
         .catch((err) => {
@@ -61,7 +70,6 @@ router.post('/resetPassword', function resetPassword(req, res, next) {
                 res.json(service_res.message)
             }
             else {
-                console.log("resetPassword - service_res : ", service_res)
                 res.json(service_res)
             }
         })
@@ -74,7 +82,7 @@ router.post('/resetPassword', function resetPassword(req, res, next) {
 	}
 });
 
-router.post('/updatePassword', function updatePassword(req, res, next) {
+router.post('/updatePassword', [authJwt.verifyToken], function updatePassword(req, res, next) {
 	const username = req.body.email;
 	const currentPassword = req.body.currentPassword;
 	const newPassword = req.body.newPassword;
@@ -85,7 +93,6 @@ router.post('/updatePassword', function updatePassword(req, res, next) {
                 res.json(service_res.message)
             }
             else {
-                console.log("service_res : ", service_res)
                 res.json(service_res)
             }
         })
@@ -97,13 +104,19 @@ router.post('/updatePassword', function updatePassword(req, res, next) {
 	}
 });
 
-router.get('/home', function(request, response) {
-	if (request.session.loggedin) {
-		response.send('Welcome back, ' + request.session.username + '!');
+router.get('/home', [authJwt.verifyToken], function(request, response) {
+    console.log("home get route : ", request.user, request.session)
+	if (request.user) {
+		response.send('Welcome back, ' + request.user + '!');
 	} else {
 		response.send('Please login to view this page!');
 	}
 	response.end();
+});
+
+router.get('/logout', [authJwt.verifyToken],(req,res) => {
+    req.session.destroy();
+    res.redirect('/');
 });
 
 module.exports = router;

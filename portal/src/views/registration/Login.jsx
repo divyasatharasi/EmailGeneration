@@ -3,18 +3,20 @@ import axios from 'axios';
 import './Registration.css'
 import { useHistory } from "react-router-dom";
 import { useDispatch } from 'react-redux'
-// import { decrementCounter, incrementCounter } from '../../reducers/auth'
 
 export default function Login() {
 
     let [loginData, setResponseData] = useState('');
     const history = useHistory();
     const dispatch = useDispatch()
+
     const authenticateUser = () => {
-        axios.post("http://localhost:8080/user/login", {  ...loginData })
+        axios.post("http://localhost:8080/api/login", {  ...loginData })
         .then((response) => {
-            console.log("login data : ", response.data)
-            // dispatch(incrementCounter());
+            if (response.data.accessToken) {
+                localStorage.setItem("user", JSON.stringify(response.data));
+              }
+            dispatch({type: "LOGIN_SUCCESS", payload: { user: response.data.user}});
             history.push("/home");
         })
         .catch((error) => {
@@ -23,7 +25,6 @@ export default function Login() {
     }
 
     const onInputValueChange = (event) => {
-        console.log(event.target.name, event.target.value);
         setResponseData({...loginData, [event.target.name]: event.target.value})
     }
 

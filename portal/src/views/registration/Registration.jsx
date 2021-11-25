@@ -7,7 +7,7 @@ export default function Registration() {
     let [registrationData, setRegistrationData] = useState('');
     
     const registerUser = () => {
-        axios.post("http://localhost:8080/user/register", {  ...registrationData })
+        axios.post("http://localhost:8080/register", {  ...registrationData })
         .then((response) => {
             console.log("data : ", response.data)
             console.log("input : ", registrationData)

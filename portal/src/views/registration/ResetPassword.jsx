@@ -7,7 +7,7 @@ export default function ResetPassword() {
     let [inputData, setInputData] = useState('');
     const history = useHistory();
     const resetPassword = () => {
-        axios.post("http://localhost:8080/user/resetPassword", {  ...inputData })
+        axios.post("http://localhost:8080/resetPassword", {  ...inputData })
         .then((response) => {
             console.log("reset password response data : ", response.data)
             history.push("/login");
@@ -29,7 +29,7 @@ export default function ResetPassword() {
                 <p> Email</p>
                 <input type="email" name="email" placeholder="Enter email" onChange={(event) => onInputValueChange(event)}/>
             </div>
-            <button type="button" class="btn btn-primary" onClick={resetPassword}>Reset Password</button>
+            <button type="button" className="btn btn-primary" onClick={resetPassword}>Reset Password</button>
         </div>
     )
 }

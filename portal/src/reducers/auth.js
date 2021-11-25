@@ -14,7 +14,7 @@ import {
   
   export default function (state = initialState, action) {
     const { type, payload } = action;
-  
+    console.log("reducer : ", type, payload)
     switch (type) {
       case REGISTER_SUCCESS:
         return {
