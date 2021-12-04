@@ -1,0 +1,12 @@
+.table-options {
+  display: flex;
+  justify-content: space-between;
+}
+
+.table-search {
+  text-align: left;
+}
+
+.table-export {
+  text-align: right;
+}

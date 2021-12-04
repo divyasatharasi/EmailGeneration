@@ -21,3 +21,27 @@
 .button-field {
 
 }
+
+.container {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.form-change-password {
+    width: 70vh;
+}
+
+.change-password-fields {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding: 10px;
+}
+
+.change-password-button {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    padding: 30px;
+}

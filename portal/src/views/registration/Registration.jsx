@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import axios from 'axios';
+import authHeader from '../../common/authHeader';
 import './Registration.css'
 
 export default function Registration() {
@@ -7,7 +8,7 @@ export default function Registration() {
     let [registrationData, setRegistrationData] = useState('');
     
     const registerUser = () => {
-        axios.post("http://localhost:8080/register", {  ...registrationData })
+        axios.post("http://localhost:8080/api/register", {  ...registrationData }, {headers: authHeader()})
         .then((response) => {
             console.log("data : ", response.data)
             console.log("input : ", registrationData)

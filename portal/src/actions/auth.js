@@ -55,10 +55,10 @@ import {
       }
   };
   
-  // export const logout = () => (dispatch) => {
-  //   AuthService.logout();
-  
-  //   dispatch({
-  //     type: LOGOUT,
-  //   });
-  // };
+  export const logout = () => (dispatch) => {
+    return () => {
+      dispatch({
+        type: LOGOUT,
+      });
+    }
+  };

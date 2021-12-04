@@ -4,7 +4,7 @@ const config = require("../config.json");
 verifyToken = (req, res, next) => {
     console.log(" verify tocken function is called !!!!")
     let token = req.headers["x-access-token"];
-  
+    console.log(" verify tocken: ", token)
     if (!token) {
       return res.status(403).send({
         message: "No token provided!"

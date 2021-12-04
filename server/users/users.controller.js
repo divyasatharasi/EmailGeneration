@@ -1,9 +1,26 @@
 ﻿const express = require('express');
 const router = express.Router();
 var jwt = require("jsonwebtoken");
+const multer = require('multer');
+const path = require('path')
 const userService = require('./user.service');
 const config = require("../config.json")
-const authJwt = require("../helper/authJwt")
+const authJwt = require("../helper/authJwt");
+const { request } = require('express');
+
+//! Use of Multer
+var storage = multer.diskStorage({
+    destination: (req, file, callBack) => {
+        callBack(null, './uploads/')     // './uploads/' directory name where save the file
+    },
+    filename: (req, file, callBack) => {
+        callBack(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname))
+    }
+})
+
+var upload = multer({
+    storage: storage
+});
 
 router.get('/hello', function register(req, res, next) {
     console.log("hello")
@@ -38,6 +55,7 @@ router.post('/login', function login(req, res, next) {
 	if (username && password) {
         userService.login(username, password)
         .then((login_res) => {
+            console.log("login_res: ", login_res)
             if (login_res && !login_res.error && login_res.message == "success") {
                 const user = login_res.user[0]
                 req.session.user = user;
@@ -49,7 +67,7 @@ router.post('/login', function login(req, res, next) {
                     accessToken: token
                 });
             } else {
-                res.json(login_res.message)
+                res.json(login_res)
             }
         })
         .catch((err) => {
@@ -89,7 +107,8 @@ router.post('/updatePassword', [authJwt.verifyToken], function updatePassword(re
 	if (username && currentPassword && newPassword) {
         userService.updatePassword(username, currentPassword, newPassword)
         .then((service_res) => {
-            if(service_res.error) {
+            console.log('service_res :', service_res)
+            if(service_res && service_res.error) {
                 res.json(service_res.message)
             }
             else {
@@ -102,6 +121,47 @@ router.post('/updatePassword', [authJwt.verifyToken], function updatePassword(re
 	} else {
 		res.send('All fields are mandatory!');
 	}
+});
+
+router.post('/fileUpload', [authJwt.verifyToken], upload.single('file'), function(request, response) {
+    debugger;
+    console.log("fileUpload route : ", request.file, request.body.fileContentType)
+	if (request.file) {
+        const fileContentType = request.body.fileContentType
+        userService.fileUpload(request.file, fileContentType)
+        .then((upload_res) => {
+            console.log("upload_res: ", upload_res)
+            if (upload_res && !upload_res.error && upload_res.message == "success") {
+                // res.status(200).send({
+                //     user,
+                //     accessToken: token
+                // });
+            } else {
+                response.json(upload_res)
+            }
+        })
+        .catch((err) => {
+            console.log('login error :', err)
+        });
+		response.send('Welcome back, ' + request.user + '!');
+	} else {
+		response.send('Please login to view this page!');
+	}
+	response.end();
+});
+
+
+
+// Retrieve all users 
+router.get('/customerList', function (req, res, next) {
+    userService.getCustomerList()
+    .then((response) => {
+        res.json({message: "user list", data: response});
+    })
+    .catch((err) => {
+        console.error(`Error while getting users list `, err.message);
+        next(err);
+    })
 });
 
 router.get('/home', [authJwt.verifyToken], function(request, response) {

@@ -7,7 +7,7 @@ export default function ResetPassword() {
     let [inputData, setInputData] = useState('');
     const history = useHistory();
     const resetPassword = () => {
-        axios.post("http://localhost:8080/resetPassword", {  ...inputData })
+        axios.post("http://localhost:8080/api/resetPassword", {  ...inputData })
         .then((response) => {
             console.log("reset password response data : ", response.data)
             history.push("/login");
