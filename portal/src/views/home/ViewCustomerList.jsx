@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios';
 
-import Table from "../../common/Table";
-import DataTable from "../../common/DataTable";
 import BootstrapTableComponent from "../../common/BootstrapTableComponent";
 import authHeader from '../../common/authHeader';
 
