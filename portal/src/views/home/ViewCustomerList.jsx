@@ -4,13 +4,14 @@ import axios from 'axios';
 
 import BootstrapTableComponent from "../../common/BootstrapTableComponent";
 import authHeader from '../../common/authHeader';
+import './Home.css'
 
 
 function ViewCustomerList() {
 
     const [customerList, setCustomerList] = useState([]);
     const [pageSize, setPageSize] = useState(5);
-    const [sortByColumn, setSortByColumn] = useState([{ dataField: 'company_name' }]);
+    const [sortByColumn, setSortByColumn] = useState([{ dataField: 'company_name', sort: 'asc' }]);
 
     useEffect(() => {
         console.log("view customer list useeffect called");
@@ -76,6 +77,21 @@ function ViewCustomerList() {
             text: 'Course',
             dataField: 'course',
             sort: true
+        },
+        {
+            text: 'Email 1',
+            dataField: 'email_1',
+            classes: 'email-cell'
+        },
+        {
+            text: 'Email 2',
+            dataField: 'email_2',
+            classes: 'email-cell'
+        },
+        {
+            text: 'Email 3',
+            dataField: 'email_3',
+            classes: 'email-cell'
         }
     ];
     console.log("customer list : ", customerList)

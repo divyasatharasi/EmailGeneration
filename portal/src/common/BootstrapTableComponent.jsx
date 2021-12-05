@@ -12,7 +12,7 @@ const { SearchBar, ClearSearchButton } = Search;
 
 function BootstrapTableComponent({ columns, data, pageSize, sortByColumn }) {
     const pagination = paginationFactory({
-        page: 2,
+        page: 1,
         sizePerPage: pageSize,
         lastPageText: '>>',
         firstPageText: '<<',
