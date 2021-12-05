@@ -7,6 +7,7 @@ const path = require('path')
 
 const config = require('../config.json');
 const mailer = require('../helper/mailer');
+const createExcel = require('../helper/createExcel');
 
 const saltRounds = 10;
 
@@ -131,7 +132,7 @@ async function updatePassword(email, currentPassword, newPassword) {
 }
 
 //File Upload
-async function fileUpload(file, fileContentType) {
+async function fileUpload(file, fileContentType, request, response) {
     console.log("file in service : ", path.dirname(file.path))
     try {
         if (file == undefined) {
@@ -139,7 +140,6 @@ async function fileUpload(file, fileContentType) {
         }
     
         let filePath = path.normalize(__dirname + "/../uploads/" + file.filename);
-        console.log("asd path : ", filePath)
         readXlsxFile(filePath).then(async (rows) => {
             // skip header
             rows.shift();
@@ -156,9 +156,8 @@ async function fileUpload(file, fileContentType) {
         
                 customer_data.push(data);
             });
-            console.log("rows length : ", rows[0])
 
-            const resultRows = insertCustomerRecords(rows, fileContentType);
+            const resultRows = processData(rows, fileContentType, request, response);
 
             /* ResultSetHeader {
                     fieldCount: 0,
@@ -168,7 +167,7 @@ async function fileUpload(file, fileContentType) {
                     serverStatus: 2,
                     warningStatus: 0
                 } */
-            if (resultRows.affectedRows > 0) {
+            if (resultRows && resultRows.affectedRows > 0) {
                 return { error: true, message: "Processed customer records successfully!." }
             }
         });
@@ -178,10 +177,120 @@ async function fileUpload(file, fileContentType) {
     }
 }
 
-async function insertCustomerRecords (rows, fileContentType) {
+async function processData (rows, fileContentType, request, response) {
+    let results = undefined;
+    if (fileContentType === 'customer') {
+        const distinctCompanies = [...new Set(rows.map(r => r[0]))];
+        const strCompany = JSON.stringify(distinctCompanies)
+        const companyList = strCompany.substring(1,strCompany.length - 1);
+
+        const dbConn = await mysql.createConnection(config.database);
+        const [resultRows, fields] = await dbConn.query(`SELECT company_name, domain, format1, format2, format3 FROM domain_info WHERE company_name in ( ${[companyList]} )`);
+
+        if (resultRows.length > 0) {
+            console.log('asd :asd :', resultRows)
+            const processedRows =  createMailFormats(rows, resultRows, request, response);
+            // console.log("processedRows : ", processedRows[9].map(String))
+
+            results = await insertFileData (processedRows, fileContentType);
+        }
+    } else {
+        results = await insertFileData (rows, fileContentType);
+    }
+    return results;
+}
+
+function createMailFormats(rows, domainlist, request, response) {
+    const processedRows = [];
+    const unProcessedRows = [];
+    for(let i=0; i < rows.length; i++) {
+        const domain = domainlist.find(d => d["company_name"] == rows[i][0]);
+        console.log("domain : ", domain);
+        if (domain && Object.keys(domain).length != 0) {
+            const newRow = generateEmailFormats(rows[i], domain);
+            processedRows.push(newRow);
+        } else {
+            unProcessedRows.push(rows[i]);
+        }
+    }
+    if (unProcessedRows.length > 0) {
+        //create and download excel with un-processed rows
+        createExcel.generateExcel(unProcessedRows, request, response);
+    }
+    return processedRows;
+}
+
+function generateEmailFormats(row, domainInfo) {
+    for(let j = 1; j < 4; j++) {
+        email = null;
+        const format = domainInfo[`format${j}`]
+        const domain = domainInfo.domain;
+        if(format != null) {
+            if (format == 'F' || format == 'FN') {
+                email = row[2] + '@' + domain
+            } else if (format == 'FDotL' || format == 'FN.LN') {
+                email = row[2] + '.' + row[4] + '@' + domain
+            } else if (format == 'FIL' || format == 'FILN') {
+                email = row[2][0] + row[4] + '@' + domain
+            } else if (format == 'FIDotL' || format ==  'FI.LN') {
+                email = row[2][0] + '.' + row[4] + '@' + domain
+            } else if (format == 'L' || format == 'LN') {
+                email = row[4] + '@' + domain
+            } else if (format == 'F_L' || format == 'FN_LN') {
+                email = row[2] + '_' + row[4] + '@' + domain
+            } else if (format == 'LDotF') {
+                email = row[4] + '.' + row[2] + '@' + domain
+            } else if (format == 'FILI') {
+                email = row[2][0] + row[4][0] + '@' + domain
+            } else if (format == 'LIF') {
+                email = row[4][0] + row[2] + '@' + domain
+            } else if (format == 'L_F' || format == 'LN_FN' ) {
+                email = row[4] + '_' + row[2] + '@' + domain
+            } else if (format == 'FL' || format == 'FNLN') {
+                email = row[2] + row[4] + '@' + domain
+            } else if (format == 'FLI' || format == 'FNLI') {
+                email = row[2] + row[4][0] + '@' + domain
+            } else if (format == 'LFI' || format == 'LNFI') {
+                email = row[4] + row[2][0] + '@' + domain
+            } else if (format == 'FDotLI' || format == 'FN.LI') {
+                email = row[2] + '.' + row[4][0] + '@' + domain
+            } else if (format == 'FIDotLI') {
+                email = row[2][0] + '.' + row[4][0] + '@' + domain
+            } else if (format == 'LIDotFI') {
+                email = row[4][0] + '.' + row[2][0] + '@' + domain
+            } else if (format == 'FHpynenL' || format == 'FN-LN') {
+                email = row[2] + '-' + row[4] + '@' + domain
+            } else if (format == 'LHpynenF' || format == 'LN-FN') {
+                email = row[4] + '-' + row[2] + '@' + domain
+            } else if (format == 'LF') {
+                email = row[4] + row[2] + '@' + domain
+            } else if (format == 'FIUnderL' || format == 'FI_LN') {
+                email = row[2][0] + '_' + row[4] + '@' + domain
+            } else if (format == 'LIUnderF') {
+                email = row[4][0] + '_' + row[2] + '@' + domain
+            } else if (format == 'LN_FI') {
+                email = row[4] + '_' + row[2][0] + '@' + domain
+            } else if (format == 'FI-L') {
+                email = row[2][0] + '_' + row[4] + '@' + domain
+            } else if (format == 'FIHpynenL') {
+                email =  row[2][0] + '-' + row[4] + '@' + domain
+            } else if (format == 'L_FI') {
+                email =  row[4] + '_' + row[2][0] + '@' + domain
+            } else if (format == 'F_LI') {
+                email =  row[2] + '_' + row[4][0] + '@' + domain
+            } else if (format == 'LDotFI') {
+                email =  row[4] + '.' + row[2][0] + '@' + domain
+            }
+        }
+        row[9 + j] = email;
+    }
+    return row;
+}
+
+async function insertFileData (rows, fileContentType) {
     const dbConn = await mysql.createConnection(config.database);
     if(fileContentType === 'customer') {
-        const [resultRows, fields] = await dbConn.query('INSERT INTO customer_info (company_name, lead_full_name, lead_first_name, lead_middle_name, lead_last_name, designation, industry, city, country, course) VALUES ?', [rows], true);
+        const [resultRows, fields] = await dbConn.query('INSERT INTO customer_info (company_name, lead_full_name, lead_first_name, lead_middle_name, lead_last_name, designation, industry, city, country, course, email_1, email_2, email_3) VALUES ?', [rows], true);
 
         return resultRows;
     } else {

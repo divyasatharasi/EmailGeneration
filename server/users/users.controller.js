@@ -127,8 +127,19 @@ router.post('/fileUpload', [authJwt.verifyToken], upload.single('file'), functio
     debugger;
     console.log("fileUpload route : ", request.file, request.body.fileContentType)
 	if (request.file) {
+    
+        // res is a Stream object
+        response.setHeader(
+          "Content-Type",
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        );
+        response.setHeader(
+          "Content-Disposition",
+          "attachment; filename=" + "un-processed-customer-list.xlsx"
+        );
+        
         const fileContentType = request.body.fileContentType
-        userService.fileUpload(request.file, fileContentType)
+        userService.fileUpload(request.file, fileContentType, request, response)
         .then((upload_res) => {
             console.log("upload_res: ", upload_res)
             if (upload_res && !upload_res.error && upload_res.message == "success") {
