@@ -44,6 +44,7 @@ async function create(params) {
         const [rows, fields] = await dbConn.execute(`INSERT INTO user_details (first_name,last_name, email, password, is_admin) VALUES ("${params.first_name}", "${params.last_name}", "${params.email}", "${hash}", ${!!params.is_admin}) `);
         console.log("register rows : ", rows)
         if (rows && rows.affectedRows) {
+			mailer.sendMail(defaultPassword,params.email);
             return { error: false, message: 'New user has been created successfully.' };
         } else { 
             return {error: true, message: "Something went wrong!"}
@@ -77,9 +78,19 @@ async function resetPassword(email) {
     const [rows, fields] = await dbConn.query(`SELECT * FROM user_details WHERE email = "${email}"`) 
 
     if (rows.length > 0) {
-        console.log("One Time Password : ", randtoken.generate(8))
+		const defaultPassword = randtoken.generate(8);
+		console.log("One Time Password : ", defaultPassword)
+		const [rows, fields] = await dbConn.execute(`UPDATE user_details SET  otp="${defaultPassword}" WHERE email ="${email}"`);
+        console.log("register rows : ", rows)
+        if (rows && rows.affectedRows) {
+			mailer.sendMail(defaultPassword, email);
+            return { error: false, message: 'New user has been created successfully.' };
+        } else { 
+            return {error: true, message: "Something went wrong!"}
+        };
+        //console.log("One Time Password : ", randtoken.generate(8))
         //send mail
-        return { error: false, message: "success" }
+        //return { error: false, message: "success" }
     } else {
         return { error: true, message: 'Incorrect Username and/or Password!' }
     }			
