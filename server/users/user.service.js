@@ -140,7 +140,7 @@ async function fileUpload(file, fileContentType, request, response) {
         }
     
         let filePath = path.normalize(__dirname + "/../uploads/" + file.filename);
-        readXlsxFile(filePath).then(async (rows) => {
+        const result = await readXlsxFile(filePath).then(async (rows) => {
             // skip header
             rows.shift();
       
@@ -157,20 +157,15 @@ async function fileUpload(file, fileContentType, request, response) {
                 customer_data.push(data);
             });
 
-            const resultRows = processData(rows, fileContentType, request, response);
-
-            /* ResultSetHeader {
-                    fieldCount: 0,
-                    affectedRows: 10,
-                    insertId: 1,
-                    info: 'Records: 10  Duplicates: 0  Warnings: 0',
-                    serverStatus: 2,
-                    warningStatus: 0
-                } */
+            const { res_insert_data: resultRows, res_insert_data, res_unprocessed_rows: unProcessedRows} = await processData(rows, fileContentType, request, response);
+            console.log("fileUpload - resultRows : ", res_insert_data)
             if (resultRows && resultRows.affectedRows > 0) {
-                return { error: true, message: "Processed customer records successfully!." }
+                return { error: false, message: `Processed ${resultRows.affectedRows} customer records successfully!.`, unProcessedRows }
+            } else {
+                return {error: true, message: resultRows, unProcessedRows }
             }
         });
+        return result;
     } catch (error) {
         console.log(error);
         return { error: true, message: "Could not process the file, error has occured ", message: error };
@@ -178,7 +173,8 @@ async function fileUpload(file, fileContentType, request, response) {
 }
 
 async function processData (rows, fileContentType, request, response) {
-    let results = undefined;
+    let res_insert_data = undefined;
+    let res_unprocessed_rows = undefined;
     if (fileContentType === 'customer') {
         const distinctCompanies = [...new Set(rows.map(r => r[0]))];
         const strCompany = JSON.stringify(distinctCompanies)
@@ -189,18 +185,20 @@ async function processData (rows, fileContentType, request, response) {
 
         if (resultRows.length > 0) {
             console.log('asd :asd :', resultRows)
-            const processedRows =  createMailFormats(rows, resultRows, request, response);
-            // console.log("processedRows : ", processedRows[9].map(String))
+            const { processedRows, unProcessedRows } = await createMailFormats(rows, resultRows, request, response);
+            res_unprocessed_rows = unProcessedRows;
 
-            results = await insertFileData (processedRows, fileContentType);
+           res_insert_data = await insertFileData (processedRows, fileContentType);
+        } else {
+            res_insert_data = "Processed 0 records, matching domains not available!";
         }
     } else {
-        results = await insertFileData (rows, fileContentType);
+        res_insert_data = await insertFileData (rows, fileContentType);
     }
-    return results;
+    return { res_insert_data, res_unprocessed_rows };
 }
 
-function createMailFormats(rows, domainlist, request, response) {
+async function createMailFormats(rows, domainlist, request, response) {
     const processedRows = [];
     const unProcessedRows = [];
     for(let i=0; i < rows.length; i++) {
@@ -213,11 +211,8 @@ function createMailFormats(rows, domainlist, request, response) {
             unProcessedRows.push(rows[i]);
         }
     }
-    if (unProcessedRows.length > 0) {
-        //create and download excel with un-processed rows
-        createExcel.generateExcel(unProcessedRows, request, response);
-    }
-    return processedRows;
+    
+    return {processedRows, unProcessedRows};
 }
 
 function generateEmailFormats(row, domainInfo) {
@@ -291,11 +286,9 @@ async function insertFileData (rows, fileContentType) {
     const dbConn = await mysql.createConnection(config.database);
     if(fileContentType === 'customer') {
         const [resultRows, fields] = await dbConn.query('INSERT INTO customer_info (company_name, lead_full_name, lead_first_name, lead_middle_name, lead_last_name, designation, industry, city, country, course, email_1, email_2, email_3) VALUES ?', [rows], true);
-
         return resultRows;
     } else {
         const [resultRows, fields] = await dbConn.query('INSERT INTO domain_info (company_name, domain, format1, format2, format3) VALUES ?', [rows], true);
-
         return resultRows;
     }
     

@@ -4,6 +4,7 @@ import axios from 'axios';
 
 import BootstrapTableComponent from "../../common/BootstrapTableComponent";
 import authHeader from '../../common/authHeader';
+import tableConfig from '../../common/table-config.json';
 import './Home.css'
 
 
@@ -29,75 +30,9 @@ function ViewCustomerList() {
         })
     }
 
-    const columns = [
-        {
-            text: 'Company',
-            dataField: 'company_name',
-            sort: true
-        },
-        {
-            text: 'Lead Full Name',
-            dataField: 'lead_full_name',
-            sort: true
-        },
-        {
-            text: 'Lead First Name',
-            dataField: 'lead_first_name',
-            sort: true
-        },
-        {
-            text: 'Lead Middle Name',
-            dataField: 'lead_middle_name',
-        },
-        {
-            text: 'Lead Last Name',
-            dataField: 'lead_last_name',
-        },
-        {
-            text: 'Designation',
-            dataField: 'designation',
-            sort: true
-        },
-        {
-            text: 'Industry',
-            dataField: 'industry',
-            sort: true
-        },
-        {
-            text: 'City',
-            dataField: 'city',
-            sort: true
-        },
-        {
-            text: 'Country',
-            dataField: 'country',
-            sort: true
-        },
-        {
-            text: 'Course',
-            dataField: 'course',
-            sort: true
-        },
-        {
-            text: 'Email 1',
-            dataField: 'email_1',
-            classes: 'email-cell'
-        },
-        {
-            text: 'Email 2',
-            dataField: 'email_2',
-            classes: 'email-cell'
-        },
-        {
-            text: 'Email 3',
-            dataField: 'email_3',
-            classes: 'email-cell'
-        }
-    ];
-    console.log("customer list : ", customerList)
     return (
         <>
-            <BootstrapTableComponent columns={columns} data={customerList} pageSize={pageSize} sortByColumn={sortByColumn} />
+            <BootstrapTableComponent columns={tableConfig.columns} data={customerList} pageSize={pageSize} sortByColumn={sortByColumn} />
         </>
     )
 }

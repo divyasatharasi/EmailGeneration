@@ -3,7 +3,7 @@ const excel = require("exceljs");
 let workbook = new excel.Workbook();
 let worksheet = workbook.addWorksheet("Tutorials");
 
-function generateExcel (rows, request, response) {
+async function generateExcel (rows, request, response) {
     worksheet.columns = [
         { header: 'Company', key: 'company_name' },
         { header: 'Lead Full Name', key: 'lead_full_name' },

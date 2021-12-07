@@ -10,7 +10,7 @@ import './table-style.css';
 
 const { SearchBar, ClearSearchButton } = Search;
 
-function BootstrapTableComponent({ columns, data, pageSize, sortByColumn }) {
+function BootstrapTableComponent({ columns, data, pageSize, sortByColumn, showSearch = true }) {
     const pagination = paginationFactory({
         page: 1,
         sizePerPage: pageSize,
@@ -54,10 +54,10 @@ function BootstrapTableComponent({ columns, data, pageSize, sortByColumn }) {
           props => (
             <div>
                 <div className="table-options">
-                    <div className="table-search">
+                    {showSearch && <div className="table-search">
                         <SearchBar style={{right: 0}} srText="" {...props.searchProps} />
                         <ClearSearchButton {...props.searchProps} />
-                    </div>
+                    </div>}
                     <div className="table-export">
                         <DataExportCSV {...props.csvProps} />
                     </div>
