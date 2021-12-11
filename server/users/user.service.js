@@ -93,7 +93,7 @@ async function resetPassword(email) {
         //send mail
         //return { error: false, message: "success" }
     } else {
-        return { error: true, message: 'Incorrect Username and/or Password!' }
+        return { error: true, message: 'User/email does not exist' }
     }			
 }
 

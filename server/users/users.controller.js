@@ -83,12 +83,7 @@ router.post('/resetPassword', function resetPassword(req, res, next) {
 	if (username) {
         userService.resetPassword(username)
         .then((service_res) => {
-            if(service_res.error) {
-                res.json(service_res.message)
-            }
-            else {
-                res.json(service_res)
-            }
+            res.json(service_res)
         })
         .catch((err) => {
             console.log('resetPassword error :', err)

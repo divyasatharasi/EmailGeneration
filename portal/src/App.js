@@ -24,12 +24,10 @@ function App() {
   const { isLoggedIn, user } = useSelector((state) => state.auth)
   const isAdmin = user && user.is_admin == 1 ? true : false;
   const userName = user && user.first_name ? `${user.first_name} ${user.last_name}` : (isAdmin ? 'Admin' : 'User' );
-  console.log("userName : ", userName)
-  console.log("isLoggedIn : ", isLoggedIn)
   const handleLogout = () => {
     localStorage.clear();
     dispatch({type: "LOGOUT"});
-    history.push("/");
+    history.push("/login");
   } 
 
   return (
@@ -79,9 +77,9 @@ function App() {
 
         <div className="container mt-3">
           <Switch>
-            <Route exact path={["/", "/login"]}> <Login /> </Route>
+            <Route exact path="/login"> <Login /> </Route>
             <Route exact path="/register"> <Registration /> </Route>
-            <PrivateRoute exact path="/home" component={Home} authed={isLoggedIn} />
+            <PrivateRoute exact path={["/", "/home"]} component={Home} authed={isLoggedIn} />
             <PrivateRoute exact path="/change-password" component={ChangePassword} authed={isLoggedIn} />
             <PrivateRoute exact path="/file-upload" component={FileUpload} authed={isLoggedIn} />
             <PrivateRoute exact path="/customer-list" component={ViewCustomerList} authed={isLoggedIn} />

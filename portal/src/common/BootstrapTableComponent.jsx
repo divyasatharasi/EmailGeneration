@@ -13,7 +13,8 @@ const { SearchBar, ClearSearchButton } = Search;
 function BootstrapTableComponent({ columns, data, pageSize, sortByColumn, showSearch = true }) {
     const pagination = paginationFactory({
         page: 1,
-        sizePerPage: pageSize,
+        sizePerPage: 5,
+        sizePerPageList: pageSize,
         lastPageText: '>>',
         firstPageText: '<<',
         nextPageText: '>',
@@ -64,6 +65,7 @@ function BootstrapTableComponent({ columns, data, pageSize, sortByColumn, showSe
                 </div>
                 <hr />
                 <BootstrapTable
+                    classes="table-style"
                     pagination={pagination}
                     defaultSorted={sortByColumn}
                     {...props.baseProps}

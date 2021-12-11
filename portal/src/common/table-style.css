@@ -1,3 +1,9 @@
+.table-style {
+  overflow: auto;
+  display: block;
+  table-layout: auto;
+}
+
 .table-options {
   display: flex;
   justify-content: space-between;
@@ -10,4 +16,31 @@
 .table-export {
   text-align: right;
   margin-left: auto;
+}
+
+.react-bootstrap-table {
+  width: 1400px;
+}
+.dropdown-menu {
+  width: 75px !important;
+  min-width: 75px !important;
+  position: relative;
+  text-align: center;
+}
+
+.react-bootstrap-table-pagination div:first-child {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-content: center;
+}
+
+.react-bs-table-sizePerPage-dropdown {
+  display: flex;
+  flex-direction: column;
+}
+
+.react-bootstrap-table-pagination-total {
+  display: flex;
+  align-content: flex-start;
 }

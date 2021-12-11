@@ -1,4 +1,4 @@
-{ "columns": [
+const columns = [
     {
         "text": "Company",
         "dataField": "company_name",
@@ -50,16 +50,24 @@
     {
         "text": "Email 1",
         "dataField": "email_1",
-        "classes": "email-cell"
+        "headerStyle": (colum, colIndex) => {
+            return { width: '400px', textAlign: 'center' };
+        }
     },
     {
         "text": "Email 2",
         "dataField": "email_2",
-        "classes": "email-cell"
+        "headerStyle": (colum, colIndex) => {
+            return { width: '400px', textAlign: 'center' };
+        }
     },
     {
         "text": "Email 3",
         "dataField": "email_3",
-        "classes": "email-cell"
+        "headerStyle": (colum, colIndex) => {
+            return { width: '400px', textAlign: 'center' };
+        }
     }
-]}
+];
+
+export default columns;

@@ -8,12 +8,12 @@ async function sendMail(defaultPassword, userEmail) {
 
   // create reusable transporter object using the default SMTP transport
   let transporter = nodemailer.createTransport({
-	host: "upskillscert.com",
+	host: "instil-learning.com",
     port: 465,
     secure: true, // true for 465, false for other ports
     auth: {
-      user: "razorpay@upskillscert.com", // generated ethereal user
-      pass: "XYZ", // generated ethereal password
+      user: "james.h@instil-learning.com", // generated ethereal user
+      pass: "Library@2019", // generated ethereal password
     },
     //service: 'gmail',
     //auth: {
@@ -24,7 +24,7 @@ async function sendMail(defaultPassword, userEmail) {
 
   // send mail with defined transport object
   let info = await transporter.sendMail({
-    from: '"razorpay" razorpay@upskillscert.com', // sender address
+    from: '"instil" james.h@instil-learning.com', // sender address
     to: userEmail, // list of receivers
     subject: "Default Password", // Subject line
     text: "password is:"+defaultPassword, // plain text body

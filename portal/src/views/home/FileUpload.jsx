@@ -4,13 +4,13 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import BootstrapTableComponent from "../../common/BootstrapTableComponent";
 import authHeader from '../../common/authHeader';
 import ViewCustomerList from "./ViewCustomerList";
-import tableConfig from "../../common/table-config.json";
+import columns from "../../common/table-config";
 import './Home.css'
  
 export default function FileUpload(){
 
     const [fileContentType, setFileContentType] = useState("customer");
-    const columns = tableConfig.columns.slice(0, -3);
+    const tableColumns = columns.slice(0, -3);
     const [file, setFile] = useState();
     const [fileName, setFileName] = useState("");
     const [unProcessedRows, setUnProcessedRows] = useState([]);
@@ -21,7 +21,7 @@ export default function FileUpload(){
     };
     
     const processReposnse = (unProcessedRows) => {
-        let fields = tableConfig.columns.map(a=> a['dataField']);
+        let fields = tableColumns.map(a=> a['dataField']);
         const unProcessedObj = [];
         for(let i = 0; i <unProcessedRows.length; i++ ) {
             const res = {}
@@ -103,7 +103,7 @@ export default function FileUpload(){
                 <button onClick={uploadFile}>Upload</button>
             </div>
             {unProcessedRows.length > 0 && 
-                <BootstrapTableComponent columns={columns} data={unProcessedRows} pageSize={5} showSearch={false} />
+                <BootstrapTableComponent columns={tableColumns} data={unProcessedRows} pageSize={5} showSearch={false} />
             }
         </div>
       );
