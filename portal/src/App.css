@@ -1,5 +1,10 @@
 #root {
 	height: 100vh;
+	background-color: lightblue;
+
+	background-image: linear-gradient(to top, #0c3483 0%, #a2b6df 100%, #6b8cce 100%, #a2b6df 100%);
+	/* background-image: radial-gradient( circle farthest-corner at 7.5% 24%,  rgba(237,161,193,1) 0%, rgba(250,178,172,1) 25.5%, rgba(190,228,210,1) 62.3%, rgba(215,248,247,1) 93.8% ); */
+	/* background-image: linear-gradient(to top, #0c3483 0%, #a2b6df 100%, #6b8cce 100%, #a2b6df 100%); */
 }
 
 .App {
@@ -7,7 +12,7 @@
 }
 
 .App-header {
-	background-color: gray;
+	/* background-color: gray; */
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -21,9 +26,21 @@
 	color: #61dafb;
 }
 
+.container {
+	width: 100% !important;
+}
+
+.bg-light {
+	background-color: transparent !important;
+}
+
 .navbar {
 	/* padding: 0 30px 0 30px !important; */
 	width: 100%;
+}
+
+.nav-link {
+	color: dodgerblue !important;
 }
 
 .navbar-nav {

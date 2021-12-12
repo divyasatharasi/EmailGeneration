@@ -17,6 +17,8 @@ import FileUpload from './views/home/FileUpload'
 import ViewCustomerList from './views/home/ViewCustomerList'
 import PrivateRoute from './common/privateRoute';
 
+import Navigation from "./common/Navigation";
+
 function App() {
   const location = useLocation();
   const history = useHistory();
@@ -33,47 +35,7 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">Customer Email Id Generation Portal </header>
-        <nav className="navbar navbar-expand navbar-dark bg-dark navigation-bar">
-          <div className="navbar-nav mr-auto">
-            
-          {isLoggedIn && location.pathname != "/register" && isAdmin  && <li className="nav-item">
-              <Link to={"/register"} className="nav-link">
-                Registration
-              </Link>
-            </li> }
-            {!isLoggedIn  && location.pathname != "/login" && <li className="nav-item">
-              <Link to={"/login"} className="nav-link">
-                Login
-              </Link>
-            </li> }
-            {!isLoggedIn  && location.pathname != "/reset-password" &&  <li className="nav-item">
-              <Link to={"/reset-password"} className="nav-link">
-                Reset Password
-              </Link>
-            </li>}
-            {isLoggedIn && location.pathname != "/change-password" && <li className="nav-item">
-              <Link to={"/change-password"} className="nav-link">
-                Change Password
-              </Link>
-            </li> }
-            {isLoggedIn && location.pathname != "/customer-list" && isAdmin && <li className="nav-item">
-              <Link to={"/customer-list"} className="nav-link">
-              View Customer List
-              </Link>
-            </li> }
-            {isLoggedIn && location.pathname != "/file-upload" && <li className="nav-item">
-              <Link to={"/file-upload"} className="nav-link">
-              Data Upload
-              </Link>
-            </li> }
-            {isLoggedIn && <div className="logout-wrapper"> <div style={{color: "white"}}> Welcome, {userName} </div>
-             <li className="nav-item logout">
-              <Link className="nav-link" onClick={handleLogout}>
-                Logout
-              </Link>
-            </li> </div>}
-          </div>
-        </nav>
+      <Navigation isLoggedIn={isLoggedIn} pathname={location.pathname} isAdmin={isAdmin} userName={userName} handleLogout={handleLogout} />
 
         <div className="container mt-3">
           <Switch>
