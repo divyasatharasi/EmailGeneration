@@ -1,36 +1,64 @@
 
 import React, { useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useHistory } from "react-router-dom";
 import axios from 'axios';
 import authHeader from '../../common/authHeader';
+import { Button,Modal} from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css'; 
+import './Registration.css'
 
-const ChangePassword = (props) => {
+const ChangePassword = () => {
     
     let [inputData, setInputData] = useState('');
-    const history = useHistory();
+	let [errorMessage, setErrorMessage] = useState('');
+	let [showModal, setShowModal] = useState(false);
 
-	const { isLoggedIn, user} = useSelector((state) => state.auth)
+    const history = useHistory();
+	const dispatch = useDispatch();
+
+	const { user} = useSelector((state) => state.auth)
+
+	const validatePassword = () => {
+		let isValid = true;
+		if (typeof inputData["newPassword"] == "undefined" || typeof inputData["newPasswordRepeated"] == "undefined" || (inputData["newPassword"] != inputData["newPasswordRepeated"]) ) {	
+			  isValid = false;
+			  setErrorMessage("Passwords don't match.")
+		}
+		return isValid;
+	}
 
     const updatePassword = () => {
-        axios.post("http://localhost:8080/api/updatePassword", {  ...inputData, email: user.email }, {headers: authHeader()})
-        .then((response) => {
-            console.log("change password response data : ", response.data)
-			const apiResponse = response.data;
-            if(!apiResponse.error) {
-				history.push("/login");
-			} else {
-				console.log(" Error occurred : ", apiResponse.message)
-			}
-        })
-        .catch((error) => {
-            console.log(error)
-        })
+		const isValid = validatePassword();
+		
+		if(isValid) {
+			axios.post("http://localhost:8080/api/updatePassword", {  ...inputData, email: user.email }, {headers: authHeader()})
+			.then((response) => {
+				console.log("change password response data : ", response.data)
+				const apiResponse = response.data;
+				if(!apiResponse.error) {
+					setShowModal(!showModal)
+				} else {
+					console.log(" Error occurred : ", apiResponse.message)
+					setErrorMessage(apiResponse.message)
+				}
+			})
+			.catch((error) => {
+				console.log(error)
+			})
+		}        
     }
 
     const onInputValueChange = (event) => {
         console.log(event.target.name, event.target.value);
         setInputData({...inputData, [event.target.name]: event.target.value})
+    }
+
+	const handleModal = () => {  
+        setShowModal(!showModal);
+        localStorage.clear();
+        dispatch({type: "LOGOUT"});
+        history.push("/login");
     }
 
 	return (
@@ -59,6 +87,7 @@ const ChangePassword = (props) => {
 						onChange={(event) => onInputValueChange(event)}
 				/>
 			</div>
+			{errorMessage && <div  style={{"width": "100vh", "justifyContent": "center"}} className="registration-fields"><p style={{"color": "red"}}>{errorMessage}</p></div>}
 			<div className="change-password-button">
 				<button type="button"
 					className="btn btn-primary"
@@ -67,6 +96,13 @@ const ChangePassword = (props) => {
 					Change Password
 				</button>
 			</div>
+
+			<Modal show={showModal} onHide={()=>handleModal()}>  
+            <Modal.Body>Your password has been changed successfully, please login again.</Modal.Body>  
+            <Modal.Footer>  
+                <Button onClick={()=>handleModal()}>Close</Button>  
+            </Modal.Footer>  
+            </Modal> 
 		</div>
 	);
 };

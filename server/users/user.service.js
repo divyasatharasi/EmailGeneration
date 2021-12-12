@@ -46,7 +46,7 @@ async function create(params) {
         console.log("register rows : ", rows)
         if (rows && rows.affectedRows) {
 			mailer.sendMail(defaultPassword,params.email);
-            return { error: false, message: 'New user has been created successfully.' };
+            return { success: true, message: 'New user has been created successfully.' };
         } else { 
             return {error: true, message: "Something went wrong!"}
         };
@@ -59,14 +59,23 @@ async function login(username, password) {
     const dbConn = await mysql.createConnection(config.database);
     const [rows, fields] = await dbConn.query(`SELECT * FROM user_details WHERE email = "${username}"`) 
     if (rows.length > 0) {
-        const res = await bcrypt.compare(password, rows[0].password).then(async (response) => {
-            if (response) {
-                return { error: false, message: "success", user: rows }
+        if (rows[0].otp != null)
+        {
+            if (rows[0].otp == password) {
+                return { error: false, message: "success", user: rows, redirect:"change-password"}
             } else {
-                return { error:true, message: "Wrong username/password combination!" };
+                return { error:true, message: "Wrong username/OTP combination!" };
             }
-        });
-        return res;
+        } else {
+            const res = await bcrypt.compare(password, rows[0].password).then(async (response) => {
+                if (response) {
+                    return { error: false, message: "success", user: rows }
+                } else {
+                    return { error:true, message: "Wrong username/password combination!" };
+                }
+            });
+            return res;
+        }
     } else {
         return { error: true, message: "User doesn't exist" }
     }			
@@ -108,7 +117,26 @@ async function updatePassword(email, currentPassword, newPassword) {
         const [rows, fields] = await dbConn.query(`SELECT * FROM user_details WHERE email = "${email}"`) 
 
         if (rows.length > 0) {
-            const update_res = await bcrypt.compare(currentPassword, rows[0].password).then( async (isMatch) => {
+            if(rows[0].otp !=null)
+            {
+                if (currentPassword == rows[0].otp) {
+                    const newPwdRes = await bcrypt.hash(newPassword, saltRounds).then( async (newPwdHash) => {
+                        const [rows, fields] = await dbConn.execute(`UPDATE user_details SET password = "${newPwdHash}",  otp = NULL WHERE email="${email}"`);
+                        if (rows && rows.affectedRows > 0) {
+                            return { error: false, data: rows, message: 'Password has been changed successfully.' };
+                        } else {
+                            return {error: true, message: "Something went wrong!"};
+                        }
+                    });
+                    return newPwdRes;
+                } else {
+                    return { error:true, message: "Wrong username/password combination!" };
+                }
+ 
+            }
+            else 
+            {
+                const update_res = await bcrypt.compare(currentPassword, rows[0].password).then( async (isMatch) => {
                 if (isMatch) {
                     const newPwdRes = await bcrypt.hash(newPassword, saltRounds).then( async (newPwdHash) => {
                         const [rows, fields] = await dbConn.execute(`UPDATE user_details SET password = "${newPwdHash}" WHERE email="${email}"`);
@@ -122,8 +150,9 @@ async function updatePassword(email, currentPassword, newPassword) {
                 } else {
                     return { error:true, message: "Wrong username/password combination!" };
                 }
-            });
-            return update_res;
+                });
+                return update_res;
+            }
         } else {
             return { error: true, message: "User doesn't exist" }
         }

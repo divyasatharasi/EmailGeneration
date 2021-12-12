@@ -1,11 +1,10 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import axios from 'axios';
 import './Registration.css'
 import { useHistory } from "react-router-dom";
 import { useDispatch } from 'react-redux'
 
 export default function Login() {
-
     let [loginData, setResponseData] = useState('');
     let [errorMessage, setErrorMessage] = useState('');
     const history = useHistory();
@@ -17,8 +16,8 @@ export default function Login() {
             console.log("login api response : ", response)
             if (response.data.accessToken) {
                 localStorage.setItem("user", JSON.stringify(response.data));
-                dispatch({type: "LOGIN_SUCCESS", payload: { user: response.data.user}});
-                history.push("/file-upload");
+                dispatch({type: "LOGIN_SUCCESS", payload: { ...response.data.user}});
+                history.push(`/${response.data.redirect}`);
             } else {
                 setErrorMessage(response.data.message)
             }

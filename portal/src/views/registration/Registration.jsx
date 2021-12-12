@@ -1,30 +1,44 @@
 import React, { useState } from 'react'
 import axios from 'axios';
 import authHeader from '../../common/authHeader';
+import { Button,Modal} from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css'; 
 import './Registration.css'
 
 export default function Registration() {
 
     let [registrationData, setRegistrationData] = useState('');
+    let [errorMessage, setErrorMessage] = useState('');
+    let [message, setMessage] = useState('');
+    let [showModal, setShowModal] = useState(false);
     
     const registerUser = () => {
         axios.post("http://localhost:8080/api/register", {  ...registrationData }, {headers: authHeader()})
         .then((response) => {
-            console.log("data : ", response.data)
-            console.log("input : ", registrationData)
+            const data = response.data;
+            if(data.success) {
+                setShowModal(!showModal);
+                setMessage(data.message);
+            } else {
+                setErrorMessage(data.message)
+            }
         })
         .catch((error) => {
             console.log(error)
+            setErrorMessage(error)
         })
     }
 
     const onInputValueChange = (event) => {
-        console.log(event.target.name, event.target.value, event.target.checked);
         if(event.target.name === "is_admin") {
             setRegistrationData({...registrationData, [event.target.name]: event.target.checked})
         } else {
             setRegistrationData({...registrationData, [event.target.name]: event.target.value})
         }
+    }
+
+    const handleModal = () => {  
+        setShowModal(!showModal);
     }
 
     return(
@@ -45,6 +59,15 @@ export default function Registration() {
                <p> <input type="checkbox" name="is_admin" value="isAdmin" onChange={(event) => onInputValueChange(event)} /> Is admin</p>
                 <button onClick={registerUser}>Register</button>
             </div>
+
+            {errorMessage && <div  style={{"width": "100vh", "justifyContent": "center"}} className="registration-fields"><p style={{"color": "red"}}>{errorMessage}</p></div>}
+
+            <Modal show={showModal} onHide={()=>handleModal()}>  
+            <Modal.Body>{message}</Modal.Body>  
+            <Modal.Footer>  
+                <Button onClick={()=>handleModal()}>Close</Button>  
+            </Modal.Footer>  
+            </Modal> 
         </div>
     )
 }

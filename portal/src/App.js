@@ -79,9 +79,9 @@ function App() {
           <Switch>
             <Route exact path="/login"> <Login /> </Route>
             <Route exact path="/register"> <Registration /> </Route>
-            <PrivateRoute exact path={["/", "/home"]} component={Home} authed={isLoggedIn} />
+            <PrivateRoute exact path="/home" component={Home} authed={isLoggedIn} />
             <PrivateRoute exact path="/change-password" component={ChangePassword} authed={isLoggedIn} />
-            <PrivateRoute exact path="/file-upload" component={FileUpload} authed={isLoggedIn} />
+            <PrivateRoute exact path={["/", "/file-upload"]} component={FileUpload} authed={isLoggedIn} />
             <PrivateRoute exact path="/customer-list" component={ViewCustomerList} authed={isLoggedIn} />
             <Route exact path="/reset-password"> <ResetPassword /> </Route>
           </Switch>

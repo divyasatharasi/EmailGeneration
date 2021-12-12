@@ -41,7 +41,7 @@ router.get('/users', function (req, res, next) {
 router.post('/register', [authJwt.verifyToken], function register(req, res, next) {
     userService.create(req.body)
     .then((register_res) => {
-        res.json({ message: 'Registration successful' })
+        res.json(register_res)
     })
     .catch((err) => {
         console.log('register error :', err)
@@ -63,7 +63,8 @@ router.post('/login', function login(req, res, next) {
                 });
                 res.status(200).send({
                     user,
-                    accessToken: token
+                    accessToken: token,
+                    redirect: login_res.redirect || ''
                 });
             } else {
                 res.json(login_res)
@@ -102,12 +103,7 @@ router.post('/updatePassword', [authJwt.verifyToken], function updatePassword(re
         userService.updatePassword(username, currentPassword, newPassword)
         .then((service_res) => {
             console.log('service_res :', service_res)
-            if(service_res && service_res.error) {
-                res.json(service_res.message)
-            }
-            else {
-                res.json(service_res)
-            }
+            res.json(service_res)
         })
         .catch((err) => {
             console.log('updatePassword error :', err)

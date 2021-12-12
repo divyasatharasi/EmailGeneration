@@ -79,7 +79,7 @@ export default function FileUpload(){
                         type="radio"
                         value={fileContentType}
                         name="fileContentType"
-                        checked={fileContentType == "customer"}
+                        checked={fileContentType === "customer"}
                     />
                     Customer Information
                 </div>
@@ -93,7 +93,7 @@ export default function FileUpload(){
                         type="radio"
                         value={fileContentType}
                         name="fileContentType"
-                        checked={fileContentType == "domain"}
+                        checked={fileContentType === "domain"}
                     />
                     Domain List
                 </div>
