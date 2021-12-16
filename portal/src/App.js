@@ -26,6 +26,7 @@ function App() {
   const { isLoggedIn, user } = useSelector((state) => state.auth)
   const isAdmin = user && user.is_admin == 1 ? true : false;
   const userName = user && user.first_name ? `${user.first_name} ${user.last_name}` : (isAdmin ? 'Admin' : 'User' );
+  
   const handleLogout = () => {
     localStorage.clear();
     dispatch({type: "LOGOUT"});
@@ -35,7 +36,47 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">Customer Email Id Generation Portal </header>
-      <Navigation isLoggedIn={isLoggedIn} pathname={location.pathname} isAdmin={isAdmin} userName={userName} handleLogout={handleLogout} />
+      <nav className="navbar navbar-expand navbar-dark bg-dark navigation-bar">
+          <div className="navbar-nav mr-auto">
+            
+          {isLoggedIn && isAdmin  && <li className="nav-item">
+              <Link to={"/register"} className={location.pathname === "/register" ? "nav-link nav-link-active" : "nav-link"}>
+                Registration
+              </Link>
+            </li> }
+            {!isLoggedIn && <li>
+              <Link to={"/login"} className={location.pathname === "/login" ? "nav-link nav-link-active" : "nav-link"}>
+                Login
+              </Link>
+            </li> }
+            {!isLoggedIn && <li>
+              <Link to={"/reset-password"} className={location.pathname === "/reset-password" ? "nav-link nav-link-active" : "nav-link"}>
+                Reset Password
+              </Link>
+            </li>}
+            {isLoggedIn && <li>
+              <Link to={"/change-password"} className={location.pathname === "/change-password" ? "nav-link nav-link-active" : "nav-link"}>
+                Change Password
+              </Link>
+            </li> }
+            {isLoggedIn && isAdmin && <li className="nav-item">
+              <Link to={"/customer-list"} className={location.pathname === "/customer-list" ? "nav-link nav-link-active" : "nav-link"}>
+              View Customer List
+              </Link>
+            </li> }
+            {isLoggedIn && <li className="nav-item">
+              <Link to={"/file-upload"} className={location.pathname === "/file-upload" ? "nav-link nav-link-active" : "nav-link"}>
+              Data Upload
+              </Link>
+            </li> }
+            {isLoggedIn && <div className="logout-wrapper"> <div style={{color: "dodgerblue"}}> Welcome, {userName} </div>
+             <li className="nav-item logout">
+              <Link className="nav-link" onClick={handleLogout}>
+                Logout
+              </Link>
+            </li> </div>}
+          </div>
+        </nav>
 
         <div className="container mt-3">
           <Switch>

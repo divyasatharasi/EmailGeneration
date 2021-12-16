@@ -1,10 +1,12 @@
 import React from 'react';
-import { Navbar, Nav, Container } from 'react-bootstrap';
-// import {
-//     Switch,
-//     Route,
-//     Link
-//   } from "react-router-dom";
+import { Navbar, Nav, NavItem, Container } from 'react-bootstrap';
+import Registration from '../views/registration/Registration'
+import Login from '../views/registration/Login'
+import ResetPassword from '../views/registration/ResetPassword'
+import ChangePassword from '../views/registration/ChangePassword'
+import Home from '../views/home/Home'
+import FileUpload from '../views/home/FileUpload'
+import ViewCustomerList from '../views/home/ViewCustomerList'
 
 export default function Navigation ({isLoggedIn, pathname, isAdmin, userName, handleLogout}) {
 
@@ -18,32 +20,33 @@ export default function Navigation ({isLoggedIn, pathname, isAdmin, userName, ha
                 <Nav.Link href="#link">Link</Nav.Link> */}
 
             {isLoggedIn && isAdmin  && <li className="nav-item">
-              <Nav.Link to={"/register"} className="nav-link">
-                Registration
+              <Nav.Link to={"/register"} className="nav-link" as={Registration}>
               </Nav.Link>
             </li> }
-            {!isLoggedIn && <li className="nav-item">
-              <Nav.Link to={"/login"} className="nav-link">
+            {!isLoggedIn &&
+            <NavItem eventkey={1} href={"/login"}>
+              <Nav.Link to={"/login"} className="nav-link" as={Login}>
                 Login
               </Nav.Link>
-            </li> }
+              </NavItem>
+            }
             {!isLoggedIn &&  <li className="nav-item">
-              <Nav.Link to={"/reset-password"} className="nav-link">
+              <Nav.Link to={"/reset-password"} className="nav-link" as={ResetPassword}>
                 Reset Password
               </Nav.Link>
             </li>}
             {isLoggedIn && <li className="nav-item">
-              <Nav.Link to={"/change-password"} className="nav-link">
+              <Nav.Link to={"/change-password"} className="nav-link" as={ChangePassword}>
                 Change Password
               </Nav.Link>
             </li> }
             {isLoggedIn && isAdmin && <li className="nav-item">
-              <Nav.Link to={"/customer-list"} className="nav-link">
+              <Nav.Link to={"/customer-list"} className="nav-link" as={ViewCustomerList}>
               View Customer List
               </Nav.Link>
             </li> }
             {isLoggedIn && <li className="nav-item">
-              <Nav.Link to={"/file-upload"} className="nav-link">
+              <Nav.Link to={"/file-upload"} className="nav-link" as={FileUpload}>
               Data Upload
               </Nav.Link>
             </li> }
