@@ -7,13 +7,8 @@ const path = require('path')
 
 const config = require('../config.json');
 const mailer = require('../helper/mailer');
-const createExcel = require('../helper/createExcel');
 
 const saltRounds = 10;
-
-async function sendMail() {
-    await mailer.sendMail();
-}
 
 // Retrieve all users 
 async function getUsers() {
@@ -31,7 +26,6 @@ async function getCustomerList() {
 
 // Add a new user  
 async function create(params) {
-    console.log("params : ", params)
     if (!params) {
         return { status: 400, error:true, message: 'Please provide user' };
     }
@@ -43,7 +37,6 @@ async function create(params) {
     dbConn.config.namedPlaceholders = true;
     const res = await bcrypt.hash(defaultPassword, saltRounds).then( async (hash) => {
         const [rows, fields] = await dbConn.execute(`INSERT INTO user_details (first_name,last_name, email, password, is_admin) VALUES ("${params.first_name}", "${params.last_name}", "${params.email}", "${hash}", ${!!params.is_admin}) `);
-        console.log("register rows : ", rows)
         if (rows && rows.affectedRows) {
 			mailer.sendMail(defaultPassword,params.email);
             return { success: true, message: 'New user has been created successfully.' };
@@ -83,7 +76,6 @@ async function login(username, password) {
 
 // Reset Password
 async function resetPassword(email) {
-    console.log("resetPassword ", email)
     const dbConn = await mysql.createConnection(config.database);
     const [rows, fields] = await dbConn.query(`SELECT * FROM user_details WHERE email = "${email}"`) 
 
@@ -91,16 +83,12 @@ async function resetPassword(email) {
 		const defaultPassword = randtoken.generate(8);
 		console.log("One Time Password : ", defaultPassword)
 		const [rows, fields] = await dbConn.execute(`UPDATE user_details SET  otp="${defaultPassword}" WHERE email ="${email}"`);
-        console.log("register rows : ", rows)
         if (rows && rows.affectedRows) {
 			mailer.sendMail(defaultPassword, email);
             return { error: false, message: 'New user has been created successfully.' };
         } else { 
             return {error: true, message: "Something went wrong!"}
         };
-        //console.log("One Time Password : ", randtoken.generate(8))
-        //send mail
-        //return { error: false, message: "success" }
     } else {
         return { error: true, message: 'User/email does not exist' }
     }			
@@ -109,11 +97,6 @@ async function resetPassword(email) {
 // Change Password
 async function updatePassword(email, currentPassword, newPassword) {
     const dbConn = await mysql.createConnection(config.database);
-    // const res = await bcrypt.hash(currentPassword, saltRounds, async (err, hash) => {
-    //     if (err) {
-    //         console.log(err);
-    //         return { error: true, message: err }
-    //     }
         const [rows, fields] = await dbConn.query(`SELECT * FROM user_details WHERE email = "${email}"`) 
 
         if (rows.length > 0) {
@@ -156,8 +139,16 @@ async function updatePassword(email, currentPassword, newPassword) {
         } else {
             return { error: true, message: "User doesn't exist" }
         }
-    // });
-    // return res;
+}
+
+function validateFile(headerRow, fileContentType) {
+    if(fileContentType === 'customer' && headerRow.length === 13) {
+        return true;
+    } else if(fileContentType === 'domain' && headerRow.length === 5) {
+        return true;
+    } else {
+        return false;
+    }
 }
 
 //File Upload
@@ -170,29 +161,34 @@ async function fileUpload(file, fileContentType, request, response) {
     
         let filePath = path.normalize(__dirname + "/../uploads/" + file.filename);
         const result = await readXlsxFile(filePath).then(async (rows) => {
-            // skip header
-            rows.shift();
-      
-            let customer_data = [];
-      
-            rows.forEach((row) => {
-                let data = {
-                id: row[0],
-                title: row[1],
-                description: row[2],
-                published: row[3],
-                };
+            if(rows.length > 0 && validateFile(rows[0], fileContentType)) {
+                // skip header
+                rows.shift();
         
-                customer_data.push(data);
-            });
-
-            const { res_insert_data: resultRows, res_insert_data, res_unprocessed_rows: unProcessedRows} = await processData(rows, fileContentType, request, response);
-            console.log("fileUpload - resultRows : ", res_insert_data)
-            if (resultRows && resultRows.affectedRows > 0) {
-                return { error: false, message: `Processed ${resultRows.affectedRows} customer records successfully!.`, unProcessedRows }
+                let customer_data = [];
+        
+                rows.forEach((row) => {
+                    let data = {
+                    id: row[0],
+                    title: row[1],
+                    description: row[2],
+                    published: row[3],
+                    };
+            
+                    customer_data.push(data);
+                });
+                
+                const { res_insert_data: resultRows, res_insert_data, res_unprocessed_rows: unProcessedRows} = await processData(rows, fileContentType, request, response);
+                console.log("fileUpload - resultRows : ", res_insert_data)
+                if (resultRows && resultRows.affectedRows > 0) {
+                    return { error: false, message: `Processed ${resultRows.affectedRows} customer records successfully!.`, unProcessedRows }
+                } else {
+                    return {error: true, message: resultRows, unProcessedRows }
+                }
             } else {
-                return {error: true, message: resultRows, unProcessedRows }
+                return {error: true, message: "Please upload a valid file.!"}
             }
+            
         });
         return result;
     } catch (error) {
