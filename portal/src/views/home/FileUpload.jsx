@@ -73,10 +73,13 @@ export default function FileUpload(){
 
                     }
                 })
-                .catch(function (err) {
-                    //handle error
-                    console.log(err);
-                });
+                .catch(({response}) => {
+                    if (response && response.data) {
+                        setErrorMessage(response.data.message)
+                    } else {
+                        setErrorMessage("Something went wrong!")
+                    }
+                })
             } catch (e) {
                 console.log(e);
             }

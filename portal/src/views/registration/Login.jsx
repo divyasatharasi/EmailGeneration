@@ -23,8 +23,12 @@ export default function Login() {
             }
             
         })
-        .catch((error) => {
-            console.log(error)
+        .catch(({response}) => {
+            if (response && response.data) {
+                setErrorMessage(response.data.message)
+            } else {
+                setErrorMessage("Something went wrong!")
+            }
         })
     }
 

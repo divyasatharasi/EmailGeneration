@@ -10,6 +10,7 @@ import './Home.css'
 const PAGE_SIZE = [100, 500, 1000, 2000];
 
 function ViewCustomerList() {
+    const [errorMessage, setErrorMessage] = useState('');
     const [customerList, setCustomerList] = useState([]);
     const [pageSize, setPageSize] = useState(5);
     const [sortByColumn, setSortByColumn] = useState([{ dataField: 'company_name', sort: 'asc' }]);
@@ -23,13 +24,18 @@ function ViewCustomerList() {
         .then((response) => {
             setCustomerList(response.data.data);
         })
-        .catch((error) => {
-            console.log(error)
+        .catch(({response}) => {
+            if (response && response.data) {
+                setErrorMessage(response.data.message)
+            } else {
+                setErrorMessage("Something went wrong!")
+            }
         })
     }
 
     return (
-        <>
+        <> 
+            {errorMessage && <div  style={{"width": "100vh", "justifyContent": "center"}} className="registration-fields"><p style={{"color": "red"}}>{errorMessage}</p></div>}
             <BootstrapTableComponent columns={columns} data={customerList} pageSize={PAGE_SIZE} sortByColumn={sortByColumn} />
         </>
     )

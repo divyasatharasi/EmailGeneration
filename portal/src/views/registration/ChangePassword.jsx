@@ -43,8 +43,12 @@ const ChangePassword = () => {
 					setErrorMessage(apiResponse.message)
 				}
 			})
-			.catch((error) => {
-				console.log(error)
+			.catch(({response}) => {
+				if (response && response.data) {
+					setErrorMessage(response.data.message)
+				} else {
+					setErrorMessage("Something went wrong!")
+				}
 			})
 		}        
     }
@@ -62,7 +66,7 @@ const ChangePassword = () => {
     }
 
 	return (
-		<div  className="form-change-password">
+		<div className="form-change-password">
 			<div className="change-password-fields">
 				<p>Current Password</p>
 				<input name="currentPassword"

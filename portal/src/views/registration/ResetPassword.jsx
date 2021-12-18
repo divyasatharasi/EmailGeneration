@@ -25,8 +25,12 @@ export default function ResetPassword() {
                 setErrorMessage(err)
             }
         })
-        .catch((error) => {
-            console.log(error)
+        .catch(({response}) => {
+            if (response && response.data) {
+                setErrorMessage(response.data.message)
+            } else {
+                setErrorMessage("Something went wrong!")
+            }
         })
     }
 
