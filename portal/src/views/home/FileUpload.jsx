@@ -23,6 +23,12 @@ export default function FileUpload(){
         setFileName(e.target.files[0].name);
     };
     
+    const resetFormFields = () => {
+        setFile();
+        setFileName('');
+        setErrorMessage('')
+    };
+
     const processReposnse = (unProcessedRows) => {
         let fields = tableColumns.map(a=> a['dataField']);
         const unProcessedObj = [];
@@ -58,10 +64,13 @@ export default function FileUpload(){
                     //handle success
                     console.log("file upload api response : ", data);
                     if (!data.error && data.unProcessedRows && data.unProcessedRows.length > 0) {
-                        
+                        resetFormFields();
+                        setSuccessMessage(data.message)
                         processReposnse(data.unProcessedRows);
                     } else {
+                        setSuccessMessage('')
                         setErrorMessage(data.message)
+
                     }
                 })
                 .catch(function (err) {

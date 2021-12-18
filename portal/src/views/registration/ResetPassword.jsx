@@ -44,7 +44,7 @@ export default function ResetPassword() {
 
     return(
         <div className="reset-wrapper">
-            <div style={{height: "100px"}} className="registration-fields">
+            <div style={{height: "100px"}} className="reset-fields">
                 <p>  Registered Email </p>
                 <input type="email" name="email" onChange={(event) => onInputValueChange(event)}/>
             </div>

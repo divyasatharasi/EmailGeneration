@@ -22,16 +22,23 @@
 
 .reset-wrapper div {
     display: flex;
-    width: 40%;
+    width: 80%;
     height: 100px;
     justify-content: space-evenly;
 }
 
-.registration-fields {
+.reset-fields {
     height: 50px;
     flex-wrap: wrap;
     align-items: center;
-    width: 40vh;
+    justify-content: space-between;
+}
+
+.registration-fields {
+    /* height: 50px; */
+    flex-wrap: wrap;
+    align-items: center;
+    width: 50vh;
     justify-content: space-between;
 }
 

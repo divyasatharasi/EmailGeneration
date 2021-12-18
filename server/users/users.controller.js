@@ -34,6 +34,7 @@ router.get('/users', function (req, res, next) {
     })
     .catch((err) => {
         console.error(`Error while getting users list `, err.message);
+        res.status(500).send(err);
         next(err);
     })
 });
@@ -45,6 +46,7 @@ router.post('/register', [authJwt.verifyToken], function register(req, res, next
     })
     .catch((err) => {
         console.log('register error :', err)
+        res.status(500).send(err);
     });
 });
 
@@ -72,6 +74,7 @@ router.post('/login', function login(req, res, next) {
         })
         .catch((err) => {
             console.log('login error :', err)
+            res.status(500).send(err);
         });
         
 	} else {
@@ -88,6 +91,7 @@ router.post('/resetPassword', function resetPassword(req, res, next) {
         })
         .catch((err) => {
             console.log('resetPassword error :', err)
+            res.status(500).send(err);
         });
         
 	} else {
@@ -107,6 +111,7 @@ router.post('/updatePassword', [authJwt.verifyToken], function updatePassword(re
         })
         .catch((err) => {
             console.log('updatePassword error :', err)
+            res.status(500).send(err);
         });
 	} else {
 		res.send('All fields are mandatory!');
@@ -130,7 +135,7 @@ router.post('/fileUpload', [authJwt.verifyToken], upload.single('file'), functio
         })
         .catch((err) => {
             console.log('login error :', err)
-            response.send(err)
+            response.status(500).send(err);
         });
 	} else {
 		response.send('Please login to view this page!');
@@ -147,6 +152,7 @@ router.get('/customerList', function (req, res, next) {
     })
     .catch((err) => {
         console.error(`Error while getting users list `, err.message);
+        res.status(500).send(err);
         next(err);
     })
 });

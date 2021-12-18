@@ -15,17 +15,19 @@ export default function Registration() {
     const registerUser = () => {
         axios.post("http://localhost:8080/api/register", {  ...registrationData }, {headers: authHeader()})
         .then((response) => {
+            debugger;
             const data = response.data;
             if(data.success) {
                 setShowModal(!showModal);
                 setMessage(data.message);
+                setRegistrationData('')
             } else {
                 setErrorMessage(data.message)
             }
         })
-        .catch((error) => {
-            console.log(error)
-            setErrorMessage(error)
+        .catch(({response}) => {
+            console.log(response.data)
+            setErrorMessage(response.data.message)
         })
     }
 
