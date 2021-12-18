@@ -232,7 +232,6 @@ async function createMailFormats(rows, domainlist, request, response) {
     const unProcessedRows = [];
     for(let i=0; i < rows.length; i++) {
         const domain = domainlist.find(d => d["company_name"] == rows[i][0]);
-        console.log("domain : ", domain);
         if (domain && Object.keys(domain).length != 0) {
             const newRow = generateEmailFormats(rows[i], domain);
             processedRows.push(newRow);

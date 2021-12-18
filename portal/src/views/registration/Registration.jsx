@@ -5,6 +5,13 @@ import { Button,Modal} from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css'; 
 import './Registration.css'
 
+const FIELDS = {
+    'first_name': "First name",
+    'last_name': "Last name",
+    'email': "Email"
+}
+
+
 export default function Registration() {
 
     let [registrationData, setRegistrationData] = useState('');
@@ -12,25 +19,42 @@ export default function Registration() {
     let [message, setMessage] = useState('');
     let [showModal, setShowModal] = useState(false);
     
+    const hasMandatoryfields = () => {
+        let res = true;
+        const emptyField = Object.keys(FIELDS).find( a => registrationData[a] == undefined || registrationData[a] === '');
+        if (emptyField) {
+            setErrorMessage(`${FIELDS[emptyField]} is mandatory`)
+            return false;
+        }
+        return res;
+    }
+
     const registerUser = () => {
-        axios.post("http://localhost:8080/api/register", {  ...registrationData }, {headers: authHeader()})
-        .then((response) => {
-            const data = response.data;
-            if(data.success) {
-                setErrorMessage('');
-                setShowModal(!showModal);
-                setMessage(data.message);
-            } else {
-                setErrorMessage(data.message)
+        if (registrationData === '') {
+            setErrorMessage("All fields are mandatory!")
+        } else {
+            if(hasMandatoryfields()) {
+                axios.post("http://localhost:8080/api/register", {  ...registrationData }, {headers: authHeader()})
+                .then((response) => {
+                    const data = response.data;
+                    if(data.success) {
+                        setErrorMessage('');
+                        setShowModal(!showModal);
+                        setMessage(data.message);
+                    } else {
+                        setErrorMessage(data.message)
+                    }
+                })
+                .catch(({response}) => {
+                    if (response && response.data) {
+                        setErrorMessage(response.data.message)
+                    } else {
+                        setErrorMessage("Something went wrong!")
+                    }
+                })
             }
-        })
-        .catch(({response}) => {
-            if (response && response.data) {
-                setErrorMessage(response.data.message)
-            } else {
-                setErrorMessage("Something went wrong!")
-            }
-        })
+        }
+        
     }
 
     const onInputValueChange = (event) => {
@@ -45,7 +69,7 @@ export default function Registration() {
         setShowModal(!showModal);
     }
 
-    return(
+    return (
         <div className="wrapper">
             <div className="registration-fields">
                 <p>First Name</p>
