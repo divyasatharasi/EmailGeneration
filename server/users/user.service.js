@@ -197,7 +197,7 @@ async function fileUpload(file, fileContentType, request, response) {
         return result;
     } catch (error) {
         console.log(error);
-        return { error: true, message: "Could not process the file, error has occured ", message: error };
+        return { error: true, message: "Could not process the file, error has occured ", error };
     }
 }
 
