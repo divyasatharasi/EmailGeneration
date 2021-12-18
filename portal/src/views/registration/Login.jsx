@@ -44,7 +44,7 @@ export default function Login() {
             </div>
             {errorMessage && <div  style={{"width": "100vh", "justifyContent": "center"}} className="registration-fields"><p style={{"color": "red"}}>{errorMessage}</p></div>}
             <div style={{"width": "25vh", "justifyContent": "center", "padding": "10px 0"}} className="registration-fields">
-                <button onClick={authenticateUser}>Login</button>
+                <button type='button' onClick={authenticateUser} className='btn btn-primary'>Login</button>
             </div>
         </div>
     )

@@ -1,10 +1,22 @@
-/* .radio-btn-container {
-    height: 100%;
+.file-upload {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.radio-btn-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 }
 
 .radio-btn {
-    height: 50%;
-} */
+    height: 30px;
+} 
+
+.file-style {
+    height: 50px;
+}
 
 .email-cell {
     width: 300px;

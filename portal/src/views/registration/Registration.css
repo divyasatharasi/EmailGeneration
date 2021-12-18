@@ -4,20 +4,41 @@
     flex-wrap: wrap;
     align-content: space-around;
     align-items: center;
+    width: 100%;
 }
+
 .wrapper div {
     display: flex;
 }
+
+.reset-wrapper {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-content: space-around;
+    align-items: center;
+    width: 100%;
+}
+
+.reset-wrapper div {
+    display: flex;
+    width: 40%;
+    height: 100px;
+    justify-content: space-evenly;
+}
+
 .registration-fields {
-   
+    height: 50px;
     flex-wrap: wrap;
     align-items: center;
     width: 40vh;
     justify-content: space-between;
 }
+
 .is-admin-field {
     align-items: center;
 }
+
 .button-field {
 
 }

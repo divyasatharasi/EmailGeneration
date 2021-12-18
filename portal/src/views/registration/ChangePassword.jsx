@@ -10,9 +10,9 @@ import './Registration.css'
 
 const ChangePassword = () => {
     
-    let [inputData, setInputData] = useState('');
-	let [errorMessage, setErrorMessage] = useState('');
-	let [showModal, setShowModal] = useState(false);
+    const [inputData, setInputData] = useState('');
+	const [errorMessage, setErrorMessage] = useState('');
+	const [showModal, setShowModal] = useState(false);
 
     const history = useHistory();
 	const dispatch = useDispatch();

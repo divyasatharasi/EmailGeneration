@@ -57,7 +57,7 @@ export default function Registration() {
             </div>
             <div style={{"width": "25vh", "padding": "10px 0"}} className="registration-fields">
                <p> <input type="checkbox" name="is_admin" value="isAdmin" onChange={(event) => onInputValueChange(event)} /> Is admin</p>
-                <button onClick={registerUser}>Register</button>
+                <button type="button" onClick={registerUser} className='btn btn-primary'>Register</button>
             </div>
 
             {errorMessage && <div  style={{"width": "100vh", "justifyContent": "center"}} className="registration-fields"><p style={{"color": "red"}}>{errorMessage}</p></div>}

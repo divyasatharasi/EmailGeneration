@@ -65,7 +65,7 @@ function App() {
               </Link>
             </li> }
             {isLoggedIn && <li className="nav-item">
-              <Link to={"/file-upload"} className={location.pathname === "/file-upload" ? "nav-link nav-link-active" : "nav-link"}>
+              <Link to={"/file-upload"} className={(location.pathname === "/file-upload" || location.pathname === "/" ) ? "nav-link nav-link-active" : "nav-link"}>
               Data Upload
               </Link>
             </li> }

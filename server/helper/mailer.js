@@ -15,11 +15,6 @@ async function sendMail(defaultPassword, userEmail) {
       user: "james.h@instil-learning.com", // generated ethereal user
       pass: "Library@2019", // generated ethereal password
     },
-    //service: 'gmail',
-    //auth: {
-    //  user: "satharasidivya@gmail.com", // generated ethereal user
-    //  pass: "Sdivya@452", // generated ethereal password
-    //},
   });
 
   // send mail with defined transport object

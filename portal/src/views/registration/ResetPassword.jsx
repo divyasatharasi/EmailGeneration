@@ -43,10 +43,10 @@ export default function ResetPassword() {
     }
 
     return(
-        <div className="wrapper">
-            <div className="registration-fields">
-                <p> Email</p>
-                <input type="email" name="email" placeholder="Enter email" onChange={(event) => onInputValueChange(event)}/>
+        <div className="reset-wrapper">
+            <div style={{height: "100px"}} className="registration-fields">
+                <p>  Registered Email </p>
+                <input type="email" name="email" onChange={(event) => onInputValueChange(event)}/>
             </div>
             {errorMessage && <div  style={{"width": "100vh", "justifyContent": "center"}} className="registration-fields"><p style={{"color": "red"}}>{errorMessage}</p></div>}
             <button type="button" className="btn btn-primary" onClick={resetPassword}>Reset Password</button>
