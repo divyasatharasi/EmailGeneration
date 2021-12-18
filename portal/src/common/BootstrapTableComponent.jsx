@@ -49,7 +49,10 @@ function BootstrapTableComponent({ columns, data, pageSize, sortByColumn, showSe
         data={data}
         columns={columns}
         search
-        exportCSV
+        exportCSV={{
+          onlyExportFiltered: true,
+          exportAll: false
+        }}
       >
         {
           props => (
