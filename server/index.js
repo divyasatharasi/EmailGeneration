@@ -34,8 +34,8 @@ app.use(
 
 app.use(express.json());
 
-// // Have Node serve the files for our built React app
-// app.use(express.static(path.resolve(__dirname, '../portal/build')));
+// Have Node serve the files for our built React app
+app.use(express.static(path.resolve(__dirname, '../portal/build')));
 
 app.use((req, res, next) => {
   console.log(req.session)
@@ -44,10 +44,10 @@ app.use((req, res, next) => {
 
 app.use('/api', userRouter);
 
-// // All other GET requests not handled before will return our React app
-// app.get('*', (req, res) => {
-//   res.sendFile(path.resolve(__dirname, '../portal/build', 'index.html'));
-// });
+// All other GET requests not handled before will return our React app
+app.get('*', (req, res) => {
+  res.sendFile(path.resolve(__dirname, '../portal/build', 'index.html'));
+});
 
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;
