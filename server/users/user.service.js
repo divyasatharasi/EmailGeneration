@@ -141,16 +141,6 @@ async function updatePassword(email, currentPassword, newPassword) {
         }
 }
 
-function validateFile(headerRow, fileContentType) {
-    if(fileContentType === 'customer' && headerRow.length === 13) {
-        return true;
-    } else if(fileContentType === 'domain' && headerRow.length === 5) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
 //File Upload
 async function fileUpload(file, fileContentType, request, response) {
     console.log("file in service : ", path.dirname(file.path))
@@ -181,7 +171,7 @@ async function fileUpload(file, fileContentType, request, response) {
                 const { res_insert_data: resultRows, res_insert_data, res_unprocessed_rows: unProcessedRows} = await processData(rows, fileContentType, request, response);
                 console.log("fileUpload - resultRows : ", res_insert_data)
                 if (resultRows && resultRows.affectedRows > 0) {
-                    return { error: false, message: `Processed ${resultRows.affectedRows} customer records successfully!.`, unProcessedRows }
+                    return { error: false, message: `Processed ${resultRows.affectedRows} records successfully!.`, unProcessedRows }
                 } else {
                     return {error: true, message: resultRows, unProcessedRows }
                 }
@@ -316,6 +306,16 @@ async function insertFileData (rows, fileContentType) {
         return resultRows;
     }
     
+}
+
+function validateFile(headerRow, fileContentType) {
+    if(fileContentType === 'customer' && headerRow.length === 10) {
+        return true;
+    } else if(fileContentType === 'domain' && headerRow.length === 5) {
+        return true;
+    } else {
+        return false;
+    }
 }
 
 module.exports = {
