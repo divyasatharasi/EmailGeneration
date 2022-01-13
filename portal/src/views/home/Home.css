@@ -21,3 +21,18 @@
 .email-cell {
     width: 300px;
 }
+
+.sr-only {
+    display: none !important;
+}
+
+.custom-dateFilter-class label {
+    display: flex;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+}
+
+.date-filter-input {
+    width: calc(100% - 20px - 5px);
+}

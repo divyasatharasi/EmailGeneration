@@ -1,10 +1,13 @@
 import React from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'react-bootstrap-table-next/dist/react-bootstrap-table2.css';
-import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import ToolkitProvider, { CSVExport, Search } from 'react-bootstrap-table2-toolkit';
+import filterFactory, { dateFilter } from 'react-bootstrap-table2-filter';
+
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'react-bootstrap-table-next/dist/react-bootstrap-table2.css';
+import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
+import 'react-bootstrap-table2-filter/dist/react-bootstrap-table2-filter.min.css';
 
 import './table-style.css';
 
@@ -71,6 +74,7 @@ function BootstrapTableComponent({ columns, data, pageSize, sortByColumn, showSe
                     classes="table-style"
                     pagination={pagination}
                     defaultSorted={sortByColumn}
+                    filter={ filterFactory() } 
                     {...props.baseProps}
                 />
             </div>

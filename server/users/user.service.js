@@ -26,25 +26,30 @@ async function getCustomerList() {
 
 // Add a new user  
 async function create(params) {
-    if (!params) {
-        return { status: 400, error:true, message: 'Please provide user' };
-    }
-    //generate default password
-    const defaultPassword = randtoken.generate(8);
-    console.log("One Time Password : ", defaultPassword)
+    try {
+        if (!params) {
+            return { status: 400, error:true, message: 'Please provide user' };
+        }
+        //generate default password
+        const defaultPassword = randtoken.generate(8);
+        console.log("One Time Password : ", defaultPassword)
 
-    const dbConn = await mysql.createConnection(config.database);
-    dbConn.config.namedPlaceholders = true;
-    const res = await bcrypt.hash(defaultPassword, saltRounds).then( async (hash) => {
-        const [rows, fields] = await dbConn.execute(`INSERT INTO user_details (first_name,last_name, email, password, is_admin) VALUES ("${params.first_name}", "${params.last_name}", "${params.email}", "${hash}", ${!!params.is_admin}) `);
-        if (rows && rows.affectedRows) {
-			mailer.sendMail(defaultPassword,params.email);
-            return { success: true, message: 'New user has been created successfully.' };
-        } else { 
-            return {error: true, message: "Something went wrong!"}
-        };
-    });
-    return res;
+        const dbConn = await mysql.createConnection(config.database);
+        dbConn.config.namedPlaceholders = true;
+        const res = await bcrypt.hash(defaultPassword, saltRounds).then( async (hash) => {
+            const [rows, fields] = await dbConn.execute(`INSERT INTO user_details (first_name,last_name, email, password, is_admin) VALUES ("${params.first_name}", "${params.last_name}", "${params.email}", "${hash}", ${!!params.is_admin}) `);
+            if (rows && rows.affectedRows) {
+                mailer.sendMail(defaultPassword,params.email);
+                return { success: true, message: 'New user has been created successfully.' };
+            } else { 
+                return {error: true, message: "Something went wrong!"}
+            };
+        });
+        return res;
+    } catch (error) {
+        console.log(error);
+        return { error: true, message: "Error occured in user creation ", error };
+    }
 }
 
 // Authenticate User
@@ -76,22 +81,27 @@ async function login(username, password) {
 
 // Reset Password
 async function resetPassword(email) {
-    const dbConn = await mysql.createConnection(config.database);
-    const [rows, fields] = await dbConn.query(`SELECT * FROM user_details WHERE email = "${email}"`) 
+    try {
+        const dbConn = await mysql.createConnection(config.database);
+        const [rows, fields] = await dbConn.query(`SELECT * FROM user_details WHERE email = "${email}"`) 
 
-    if (rows.length > 0) {
-		const defaultPassword = randtoken.generate(8);
-		console.log("One Time Password : ", defaultPassword)
-		const [rows, fields] = await dbConn.execute(`UPDATE user_details SET  otp="${defaultPassword}" WHERE email ="${email}"`);
-        if (rows && rows.affectedRows) {
-			mailer.sendMail(defaultPassword, email);
-            return { error: false, message: 'New user has been created successfully.' };
-        } else { 
-            return {error: true, message: "Something went wrong!"}
-        };
-    } else {
-        return { error: true, message: 'User/email does not exist' }
-    }			
+        if (rows.length > 0) {
+            const defaultPassword = randtoken.generate(8);
+            console.log("One Time Password : ", defaultPassword)
+            const [rows, fields] = await dbConn.execute(`UPDATE user_details SET  otp="${defaultPassword}" WHERE email ="${email}"`);
+            if (rows && rows.affectedRows) {
+                mailer.sendMail(defaultPassword, email);
+                return { error: false, message: 'New user has been created successfully.' };
+            } else { 
+                return {error: true, message: "Something went wrong!"}
+            };
+        } else {
+            return { error: true, message: 'User/email does not exist' }
+        }
+    } catch (error) {
+        console.log(error);
+        return { error: true, message: "Error occured while resetting password ", error };
+    }
 }
 
 // Change Password
