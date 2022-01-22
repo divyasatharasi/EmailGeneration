@@ -18,9 +18,10 @@ async function getUsers() {
 }
 
 // Retrieve all users 
-async function getCustomerList() {
+async function getCustomerList(fromDate, toDate) {
     const dbConn = await mysql.createConnection(config.database);
-    const [rows, fields] = await dbConn.execute('SELECT * FROM customer_info');
+    const qry = !!fromDate && !!toDate ? `select * from customer_info where created_date >= "${fromDate}" AND created_date <= "${toDate}"` :`SELECT * FROM customer_info`
+    const [rows, fields] = await dbConn.execute(qry);
     return rows;
 }
 

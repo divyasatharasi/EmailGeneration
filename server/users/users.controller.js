@@ -142,13 +142,25 @@ router.post('/fileUpload', [authJwt.verifyToken], upload.single('file'), functio
 	}
 });
 
-
-
 // Retrieve all users 
 router.get('/customerList', function (req, res, next) {
     userService.getCustomerList()
     .then((response) => {
         res.json({message: "user list", data: response});
+    })
+    .catch((err) => {
+        console.error(`Error while getting users list `, err.message);
+        res.status(500).send(err);
+        next(err);
+    })
+});
+
+// Retrieve filtered users created between from date and to date
+router.post('/getFilteredCustomerList', function (req, res, next) {
+    const { from_date, to_date } = req.body;
+    userService.getCustomerList(from_date, to_date)
+    .then((response) => {
+        res.json({message: "Filtered user list", data: response});
     })
     .catch((err) => {
         console.error(`Error while getting users list `, err.message);
