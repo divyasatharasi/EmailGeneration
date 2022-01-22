@@ -8,11 +8,16 @@ export default function RangeFilter(props) {
         props.getFilteredData(fromDate.current.value, toDate.current.value);
     }
 
+    const handleClear = () => {
+        props.getCustomerList();
+    }
+
     return (
         <div className="rangeFilter">
             From : <input ref={fromDate} type="date" className="filter" /> {" "}
             To: <input ref={toDate} type="date" className="filter" />
             <button type="button" value="Filter" onClick={handleFilterClick}>Filter</button>
+            <button type="button" value="Filter" onClick={handleClear}>Clear</button>
         </div>
     );
 };

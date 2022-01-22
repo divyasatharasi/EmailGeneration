@@ -21,7 +21,7 @@ export default function Registration() {
     
     const hasMandatoryfields = () => {
         let res = true;
-        const emptyField = Object.keys(FIELDS).find( a => registrationData[a] == undefined || registrationData[a] === '');
+        const emptyField = Object.keys(FIELDS).find( a => registrationData[a] === undefined || registrationData[a] === '');
         if (emptyField) {
             setErrorMessage(`${FIELDS[emptyField]} is mandatory`)
             return false;

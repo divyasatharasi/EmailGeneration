@@ -12,8 +12,7 @@ const PAGE_SIZE = [100, 500, 1000, 2000];
 function ViewCustomerList() {
     const [errorMessage, setErrorMessage] = useState('');
     const [customerList, setCustomerList] = useState([]);
-    const [pageSize, setPageSize] = useState(5);
-    const [sortByColumn, setSortByColumn] = useState([{ dataField: 'company_name', sort: 'asc' }]);
+    const sortByColumn = [{ dataField: 'company_name', sort: 'asc' }];
 
     useEffect(() => {
         getCustomerList();
@@ -64,7 +63,7 @@ function ViewCustomerList() {
     return (
         <> 
             {errorMessage && <div  style={{"width": "100vh", "justifyContent": "center"}} className="registration-fields"><p style={{"color": "red"}}>{errorMessage}</p></div>}
-            <BootstrapTableComponent columns={allColumns} data={customerList} pageSize={PAGE_SIZE} sortByColumn={sortByColumn} getFilteredData={getFilteredData} />
+            <BootstrapTableComponent columns={allColumns} data={customerList} pageSize={PAGE_SIZE} sortByColumn={sortByColumn} getFilteredData={getFilteredData} getCustomerList={getCustomerList} />
         </>
     )
 }

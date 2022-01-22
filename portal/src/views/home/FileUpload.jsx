@@ -3,7 +3,6 @@ import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import BootstrapTableComponent from "../../common/BootstrapTableComponent";
 import authHeader from '../../common/authHeader';
-import ViewCustomerList from "./ViewCustomerList";
 import columns from "../../common/table-config";
 import './Home.css'
  

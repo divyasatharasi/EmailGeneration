@@ -21,7 +21,7 @@ const ChangePassword = () => {
 
 	const validatePassword = () => {
 		let isValid = true;
-		if (typeof inputData["newPassword"] == "undefined" || typeof inputData["newPasswordRepeated"] == "undefined" || (inputData["newPassword"] != inputData["newPasswordRepeated"]) ) {	
+		if (typeof inputData["newPassword"] == "undefined" || typeof inputData["newPasswordRepeated"] == "undefined" || (inputData["newPassword"] !== inputData["newPasswordRepeated"]) ) {	
 			  isValid = false;
 			  setErrorMessage("Passwords don't match.")
 		}

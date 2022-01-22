@@ -17,14 +17,12 @@ import FileUpload from './views/home/FileUpload'
 import ViewCustomerList from './views/home/ViewCustomerList'
 import PrivateRoute from './common/privateRoute';
 
-import Navigation from "./common/Navigation";
-
 function App() {
   const location = useLocation();
   const history = useHistory();
   const dispatch = useDispatch()
   const { isLoggedIn, user } = useSelector((state) => state.auth)
-  const isAdmin = user && user.is_admin == 1 ? true : false;
+  const isAdmin = user && user.is_admin === 1 ? true : false;
   const userName = user && user.first_name ? `${user.first_name} ${user.last_name}` : (isAdmin ? 'Admin' : 'User' );
   
   const handleLogout = () => {
