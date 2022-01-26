@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import BootstrapTableComponent from "../../common/BootstrapTableComponent";
@@ -15,9 +15,11 @@ export default function FileUpload(){
     const [unProcessedRows, setUnProcessedRows] = useState([]);
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
-    
- 
+
+    const fileRef = useRef();
+
     const saveFile = (e) => {
+        clearMessages();
         setFile(e.target.files[0]);
         setFileName(e.target.files[0].name);
     };
@@ -25,9 +27,14 @@ export default function FileUpload(){
     const resetFormFields = () => {
         setFile();
         setFileName('');
+        fileRef.current.value = '';
         setErrorMessage('')
     };
 
+    const clearMessages = () => {
+        setSuccessMessage('')
+        setErrorMessage('')
+    };
     const processReposnse = (unProcessedRows) => {
         let fields = tableColumns.map(a=> a['dataField']);
         const unProcessedObj = [];
@@ -39,11 +46,11 @@ export default function FileUpload(){
             unProcessedObj.push(res);
         }
          
-        console.log("unProcessedObj : ", unProcessedObj)
         setUnProcessedRows(unProcessedObj);
     }
 
     const uploadFile = () => {
+        clearMessages();
         if (file) {
             const formData = new FormData();
             formData.append("file", file);
@@ -69,7 +76,6 @@ export default function FileUpload(){
                     } else {
                         setSuccessMessage('')
                         setErrorMessage(data.message)
-
                     }
                 })
                 .catch(({response}) => {
@@ -93,6 +99,7 @@ export default function FileUpload(){
                 <div
                 className="radio-btn"
                 onClick={() => {
+                    clearMessages();
                     setFileContentType("customer");
                 }}
                 >
@@ -105,10 +112,11 @@ export default function FileUpload(){
                     Customer Information
                 </div>
                 <div
-                className="radio-btn"
-                onClick={() => {
-                    setFileContentType("domain");
-                }}
+                    className="radio-btn"
+                    onClick={() => {
+                        clearMessages();
+                        setFileContentType("domain");
+                    }}
                 >
                     <input
                         type="radio"
@@ -120,7 +128,7 @@ export default function FileUpload(){
                 </div>
             </div>
             <div>
-                <input type="file" className='file-style' onChange={saveFile} />
+                <input type="file" ref={fileRef} className='file-style' onChange={saveFile} />
                 <button type="button" className='btn btn-primary' onClick={uploadFile}>Upload</button>
             </div>
             {errorMessage && <div  style={{"width": "100vh", "justifyContent": "center"}} className="registration-fields"><p style={{"color": "red"}}>{errorMessage}</p></div>}

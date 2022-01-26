@@ -16,7 +16,7 @@ export default function RangeFilter(props) {
         <div className="rangeFilter">
             From : <input ref={fromDate} type="date" className="filter" /> {" "}
             To: <input ref={toDate} type="date" className="filter" />
-            <button type="button" value="Filter" onClick={handleFilterClick}>Filter</button>
+            <button type="button" value="Filter" className="btn btn-primary" onClick={handleFilterClick}>Filter</button>
             <button type="button" value="Filter" onClick={handleClear}>Clear</button>
         </div>
     );

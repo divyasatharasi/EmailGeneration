@@ -11,11 +11,12 @@
 
 .table-search {
   text-align: left;
+  display: flex;
 }
 
 .table-export {
   text-align: right;
-  margin-left: auto;
+  display: flex;
 }
 
 .react-bootstrap-table {
@@ -43,6 +44,10 @@
 .react-bootstrap-table-pagination-total {
   display: flex;
   align-content: flex-start;
+}
+
+.table-date-range-filter {
+  display: flex;
 }
 
 .rangeFilter {
