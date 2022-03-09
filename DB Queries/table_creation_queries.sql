@@ -31,6 +31,9 @@ CREATE TABLE `customer_info` (
   UNIQUE KEY `id_UNIQUE` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+ALTER TABLE `email-id-generation-db`.`customer_info` 
+ADD COLUMN `created_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `email_3`;
+
 CREATE TABLE `domain_info` (
   `id` int NOT NULL AUTO_INCREMENT,
   `company_name` varchar(95) NOT NULL,
