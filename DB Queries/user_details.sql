@@ -31,8 +31,7 @@ VALUES
 <{country: }>,
 <{course: }>);
 
-ALTER TABLE `email-id-generation-db`.`customer_info` 
-ADD COLUMN `created_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `email_3`;
+
 
 
 
