@@ -1,6 +1,4 @@
-# EmailGeneration
-
-# Getting Started 
+# Getting Started EmailGeneration application
 
 ### DB Setup:
 instal mysql server only
