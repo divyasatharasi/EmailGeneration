@@ -310,10 +310,10 @@ function generateEmailFormats(row, domainInfo) {
 async function insertFileData (rows, fileContentType) {
     const dbConn = await mysql.createConnection(config.database);
     if(fileContentType === 'customer') {
-        const [resultRows, fields] = await dbConn.query('INSERT INTO customer_info (company_name, lead_full_name, lead_first_name, lead_middle_name, lead_last_name, designation, industry, city, country, course, email_1, email_2, email_3) VALUES ?', [rows], true);
+        const [resultRows, fields] = await dbConn.query('INSERT IGNORE INTO customer_info (company_name, lead_full_name, lead_first_name, lead_middle_name, lead_last_name, designation, industry, city, country, course, email_1, email_2, email_3) VALUES ?', [rows], true);
         return resultRows;
     } else {
-        const [resultRows, fields] = await dbConn.query('INSERT INTO domain_info (company_name, domain, format1, format2, format3) VALUES ?', [rows], true);
+        const [resultRows, fields] = await dbConn.query('INSERT IGNORE INTO domain_info (company_name, domain, format1, format2, format3) VALUES ?', [rows], true);
         return resultRows;
     }
     
